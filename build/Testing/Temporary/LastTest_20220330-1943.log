@@ -1,0 +1,22 @@
+Start testing: Mar 30 21:46 CEST
+----------------------------------------------------------
+1/1 Testing: MainTest
+1/1 Test: MainTest
+Command: "/home/ludger/source/sda/build/test/MainTest"
+Directory: /home/ludger/source/sda/build/test
+"MainTest" start time: Mar 30 21:46 CEST
+Output:
+----------------------------------------------------------
+Running 1 test case...
+
+[1;32;49m*** No errors detected
+[0;39;49m
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"MainTest" end time: Mar 30 21:46 CEST
+"MainTest" time elapsed: 00:00:00
+----------------------------------------------------------
+
+End testing: Mar 30 21:46 CEST

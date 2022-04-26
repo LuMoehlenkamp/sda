@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.1.0 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.15.0 FATAL_ERROR)
 project(SDA VERSION 0.1.0 LANGUAGES CXX)
 find_package(Boost REQUIRED COMPONENTS
                               filesystem 
@@ -8,6 +8,7 @@ find_package(Boost REQUIRED COMPONENTS
                               thread
                               unit_test_framework
             )
+# find_package(wiringpi)
 
 # add_executable(sda main.cc)
 add_subdirectory(src)

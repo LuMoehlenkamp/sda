@@ -7,10 +7,11 @@
 #include <sstream>
 
 #include <boost/algorithm/string.hpp>
-
+#include <boost/optional.hpp>
 
 namespace SDA
 {
+  const std::string ERROR = "error";
   class Conversion
   {
     public:
@@ -29,26 +30,27 @@ namespace SDA
 
       static uint32_t ConvertToUint(const std::string& inString);
 
-      static ConversionResult Convert(const std::string& inString)
+      static ConversionResultOpt Convert(const std::string& inString)
       {
         split_vector_type SplitVec;
         boost::split(SplitVec, inString, boost::is_any_of("_"), boost::token_compress_on);
         std::stringstream ss;
         ss << std::hex << SplitVec[SplitVec.size() - 1];
-        uint x; 
+        uint x;
         ss >> x;
-
+        ConversionResult return_val;
         if (SplitVec[0] == "fl")
         {
-          return reinterpret_cast<float&>(x);
+          return_val = reinterpret_cast<float&>(x);
+          return return_val;
         }
         if (SplitVec[0] == "u8")
         {
-          return x;
+          return_val = x;
+          return return_val;
         }
-        // ToDo: return default
+        return boost::none;
       }
   };
-
 
 }

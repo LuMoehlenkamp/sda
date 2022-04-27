@@ -17,21 +17,8 @@ int SenecDataAcquisition::operator()()
     // boost::asio::ip::tcp::resolver::query Query("192.168.178.40","80");
     // mResolver.async_resolve(Query, std::bind(&SenecDataAcquisition::ResolveHandler,this,std::placeholders::_1,std::placeholders::_2));
 
-    // ToDo: make the request a constant
     mTcpSocket.async_connect(mEndpoint, std::bind(&SenecDataAcquisition::ConnectHandler, this, std::placeholders::_1));
-    std::stringstream getRequest;
-    getRequest << SDA::POST << SDA::BLANK << SDA::SENEC_PATH << SDA::BLANK << SDA::HTTP_VERSION << SDA::CRLF;
-    getRequest << SDA::HOST << SDA::BLANK << SDA::HTTP + SDA::SENEC_IP << SDA::CRLF;
-    getRequest << SDA::USER_AGENT << SDA::BLANK << SDA::USER_AGENT_VALUE << SDA::CRLF;
-    getRequest << SDA::CONTENT_TYPE << SDA::BLANK << SDA::CONTENT_TYPE_VALUE << SDA::CRLF;
-    getRequest << SDA::CONTENT_LENGTH << SDA::BLANK << SDA::SENEC_REQUEST.length() << SDA::CRLF;
-    getRequest << SDA::ACCEPT << SDA::BLANK << SDA::ACCEPT_VALUE << SDA::CRLF;
-    getRequest << SDA::CONNECTION << SDA::BLANK << SDA::CONNECTION_VALUE << CRLF;
-    getRequest << SDA::CRLF;
-    getRequest << SDA::SENEC_REQUEST;
-    // std::cout << getRequest.str() << '\n' << '\n';
-
-    write(mTcpSocket, buffer(getRequest.str()));
+    write(mTcpSocket, buffer(SDA::POST_REQUEST));
     mDataBuffer = {0};
     mTcpSocket.async_read_some(buffer(mDataBuffer),
                                std::bind(&SenecDataAcquisition::ReadHandler,
@@ -57,8 +44,6 @@ void SenecDataAcquisition::ResolveHandler(const boost::system::error_code &ec, b
   }
   else
   {
-    // ip::tcp::endpoint endpoint(*results);
-
     std::cout << "Resolved address: " << '\n'; // endpoint.address() << ':' << endpoint.port() << '\n';
   }
 }
@@ -81,19 +66,16 @@ void SenecDataAcquisition::ReadHandler(const boost::system::error_code &ec, size
   if (ec)
   {
     if (ec.message() != "End of file")
-      std::cout << "\nRead failed with msg: " << ec.message() << '\n';
+      std::cout << "\nRead failed with msg: " << ec.message() << '\n'; // ToDo: Replace console output
   }
   else
   {
-    std::cout << '\n';
-    std::cout << "Read " << amountOfBytes << " Bytes." << '\n';
     for (auto it : mDataBuffer)
     {
       if (it != '\000')
         mResponse.push_back(it);
     }
     mDataBuffer = {0};
-    // std::cout.write(mDataBuffer.data(), amountOfBytes);
     mTcpSocket.async_read_some(buffer(mDataBuffer),
                                std::bind(&SenecDataAcquisition::ReadHandler,
                                          this,
@@ -104,46 +86,49 @@ void SenecDataAcquisition::ReadHandler(const boost::system::error_code &ec, size
 
 void SenecDataAcquisition::ProcessResponse()
 {
-
-  split_vector_type SplitVec; // #2: Search for tokens
-  // std::cout << "mResponse: " << mResponse << '\n';
+  split_vector_type SplitVec;
   boost::split(SplitVec, mResponse, boost::is_any_of("'\r\n'"), boost::token_compress_on);
-  std::cout << '\n'
-            << "Buffer splitted into " << SplitVec.size() << " vectors." << '\n';
+  // std::cout << '\n'
+  //           << "Buffer splitted into " << SplitVec.size() << " vectors." << '\n';
   
   std::stringstream ss;
   ss.clear();
   ss << SplitVec[SplitVec.size() - 1].c_str();
-  std::cout << ss.str() << '\n';
+  // std::cout << ss.str() << '\n';
+  boost::property_tree::read_json(ss, mTree);
 
-  ptree pt;
-  // variantTree pt;
-  boost::property_tree::read_json(ss, pt);
-  std::cout << "size: " << pt.size() << '\n';
-  for (auto& p : pt)
-  {
-    std::cout << p.first.c_str() << p.second.get_value<std::string>() << '\n';
-  }
-  auto x = pt.find("PM1OBJ1");
+  std::string frequency = mTree.get<std::string>("PM1OBJ1.FREQ");
+  std::cout << "frequency obj.: " << frequency << '\n';
+  ConversionResultOpt frequency_cr = Conversion::Convert(frequency);
+  if (frequency_cr)
+    std::cout<< "frequency cr: " << frequency_cr << '\n';
 
-  // ToDo: iterate over elements
-  // ToDo: store converted elements into separate prop_tree
-  std::cout << (*x).first << '\n';
-  std::string test = pt.get<std::string>("PM1OBJ1.FREQ");
-  // ToDo: conversion algo
-  std::cout << "test: " << test << '\n';
-  float y = Conversion::ConvertToFloat(test);
-  std::cout << "y: " << y << '\n';
+  ConversionResultOpt power_1_cr = GetGridPower();
+  if (power_1_cr)
+    std::cout<< "power 1 cr: " << power_1_cr << '\n';
 
-  std::cout << "Variant:" << '\n';
-  boost::variant< uint, float> var(1.2f);
-  // boost::variant< uint, float> var(1u);
-  // Extra xtra("abc");
-  boost::apply_visitor(Converter(), var);
-  ConversionResult cr = Conversion::Convert(test);
-  std::cout<< "cr: " << cr << '\n';
+  std::string power_2 = mTree.get<std::string>("PM1OBJ2.P_TOTAL");
+  std::cout << "P total 2 obj.: " << power_2 << '\n';
+  ConversionResultOpt power_2_cr = Conversion::Convert(power_2);
+  if (power_2_cr)
+    std::cout<< "power 2 cr: " << power_2_cr << '\n';
+}
+
+ConversionResultOpt SenecDataAcquisition::GetGridPower() const
+{
+  std::string power_1 = mTree.get<std::string>(SDA::P_TOTAL_PCC);
+  std::cout << "P total 1 obj.: " << power_1 << '\n';
+  ConversionResultOpt power_1_cr = Conversion::Convert(power_1);
+  return power_1_cr;
 }
 
   // std::ofstream out("response.json");
   // out << SplitVec[SplitVec.size()-1].c_str();
   // out.close();
+
+  // float y = Conversion::ConvertToFloat(test);
+  // std::cout << "y: " << y << '\n';
+
+  // std::cout << "Variant:" << '\n';
+  // boost::variant< uint, float> var(1.2f);
+  // boost::apply_visitor(Converter(), var);

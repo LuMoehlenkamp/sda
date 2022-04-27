@@ -1,0 +1,11 @@
+[requires]
+wiringpi/cci.20210727
+
+[generators]
+cmake
+CMakeDeps
+CMakeToolchain
+
+[imports]
+bin, *.dll -> ./bin
+lib, *dylib* -> ./bin

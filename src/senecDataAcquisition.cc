@@ -117,7 +117,7 @@ void SenecDataAcquisition::ProcessResponse()
 ConversionResultOpt SenecDataAcquisition::GetGridPower() const
 {
   std::string power_1 = mTree.get<std::string>(SDA::P_TOTAL_PCC);
-  std::cout << "P total 1 obj.: " << power_1 << '\n';
+  std::cout << "P total 1 obj.: " << power_1 << '\n'; // todo: Remove after testing
   ConversionResultOpt power_1_cr = Conversion::Convert(power_1);
   return power_1_cr;
 }
@@ -132,3 +132,5 @@ ConversionResultOpt SenecDataAcquisition::GetGridPower() const
   // std::cout << "Variant:" << '\n';
   // boost::variant< uint, float> var(1.2f);
   // boost::apply_visitor(Converter(), var);
+
+  // ToDo: remove comments

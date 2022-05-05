@@ -1,2 +1,10 @@
-add_executable(sda main.cc senecDataAcquisition.cc)
-target_link_libraries(sda ${Boost_LIBRARIES})
+find_package(Boost REQUIRED COMPONENTS
+                              filesystem 
+                              regex 
+                              serialization 
+                              system
+                              thread
+            )
+
+add_executable(${PROJECT_NAME_STR} main.cc senecDataAcquisition.cc)
+target_link_libraries(${PROJECT_NAME_STR} ${Boost_LIBRARIES})

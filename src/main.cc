@@ -5,25 +5,27 @@
 #include <boost/asio.hpp>
 
 #include "senecDataAcquisition.hh"
+#include "solarDataAcquisition.hh"
+
 
 using namespace boost::asio;
 
-namespace SDA
-{
-  void resolveHandler(const boost::system::error_code &ec, ip::tcp::resolver::iterator iter)
-  {
-    if (ec)
-    {
-      std::cout << "Resolve failed with message: " << ec.message() << '\n';
-    }
-    else
-    {
-      ip::tcp::endpoint endpoint(*iter);
-      std::cout << "Resolved address: " << endpoint.address() << ':' << endpoint.port() << '\n' << '\n';
-    }
-    return;
-  }
-}
+// namespace SDA
+// {
+//   void resolveHandler(const boost::system::error_code &ec, ip::tcp::resolver::iterator iter)
+//   {
+//     if (ec)
+//     {
+//       std::cout << "Resolve failed with message: " << ec.message() << '\n';
+//     }
+//     else
+//     {
+//       ip::tcp::endpoint endpoint(*iter);
+//       std::cout << "Resolved address: " << endpoint.address() << ':' << endpoint.port() << '\n' << '\n';
+//     }
+//     return;
+//   }
+// }
 
 int main(int argc, char *argv[])
 {
@@ -49,5 +51,8 @@ int main(int argc, char *argv[])
   SDA::SenecDataAcquisition sda;
   sda();
   
+  SDA::SolarDataAcquisition solar_da;
+  solar_da();
+
   return 0;
 }

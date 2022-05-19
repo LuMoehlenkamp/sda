@@ -2,11 +2,13 @@
 #include "conversion.hh"
 #include "converter.hh"
 
+#include <boost/property_tree/json_parser.hpp>
+
 using namespace boost::asio;
 using namespace SDA;
 
 SenecDataAcquisition::SenecDataAcquisition()
-    : mEndpoint(ip::address::from_string(mIp), mPort), mResolver(mIoService), mTcpSocket(mIoService, mEndpoint.protocol())
+    : mEndpoint(ip::address::from_string(SENEC_IP), mPort), mResolver(mIoService), mTcpSocket(mIoService, mEndpoint.protocol())
 {
 }
 
@@ -14,8 +16,8 @@ int SenecDataAcquisition::operator()()
 {
   try
   {
-    // boost::asio::ip::tcp::resolver::query Query("192.168.178.40","80");
-    // mResolver.async_resolve(Query, std::bind(&SenecDataAcquisition::ResolveHandler,this,std::placeholders::_1,std::placeholders::_2));
+    boost::asio::ip::tcp::resolver::query Query(SENEC_IP,"80");
+    mResolver.async_resolve(Query, std::bind(&SenecDataAcquisition::ResolveHandler,this,std::placeholders::_1,std::placeholders::_2));
 
     mTcpSocket.async_connect(mEndpoint, std::bind(&SenecDataAcquisition::ConnectHandler, this, std::placeholders::_1));
     write(mTcpSocket, buffer(SDA::POST_REQUEST));
@@ -33,6 +35,8 @@ int SenecDataAcquisition::operator()()
     return e.code().value();
   }
   ProcessResponse();
+  mIoService.stop();
+  mTcpSocket.close();
   return 0;
 }
 
@@ -44,7 +48,8 @@ void SenecDataAcquisition::ResolveHandler(const boost::system::error_code &ec, b
   }
   else
   {
-    std::cout << "Resolved address: " << '\n'; // endpoint.address() << ':' << endpoint.port() << '\n';
+    boost::asio::ip::tcp::endpoint endpoint = *results;
+    std::cout << "Resolved address: " << endpoint.address() << ':' << endpoint.port() << '\n';
   }
 }
 
@@ -111,7 +116,8 @@ void SenecDataAcquisition::ProcessResponse()
   std::cout << "P total 2 obj.: " << power_2 << '\n';
   ConversionResultOpt power_2_cr = Conversion::Convert(power_2);
   if (power_2_cr)
-    std::cout<< "power 2 cr: " << power_2_cr << '\n';
+    std::cout << "power 2 cr: " << power_2_cr << '\n';
+    std::cout << '\n';
 }
 
 ConversionResultOpt SenecDataAcquisition::GetGridPower() const

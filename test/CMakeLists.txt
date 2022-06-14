@@ -19,7 +19,7 @@ include_directories(${UNIT_TESTS_INCLUDES})
 
 # --- build test executables ---
 add_definitions(-DBOOST_TEST_DYN_LINK)
-add_executable(${PROJECT_UNIT_TESTS_NAME} ${UNIT_TESTS_SRC_FILES} ../src/senecDataAcquisition.cc)
+add_executable(${PROJECT_UNIT_TESTS_NAME} ${UNIT_TESTS_SRC_FILES} ../src/senecDataAcquisition.cc ../src/solarDataAcquisition.cc)
 target_link_libraries(${PROJECT_UNIT_TESTS_NAME} ${Boost_LIBRARIES})
 enable_testing()
 add_test(MainTest ${PROJECT_UNIT_TESTS_NAME})

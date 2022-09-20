@@ -4,17 +4,9 @@
 #include <iostream>
 #include <string>
 
-// #include <istream>
-// #include <functional>
-// #include <vector>
-// #include <fstream>
-// #include <sstream>
-// #include <utility>
-// #include <map>
-
 #include <boost/algorithm/string.hpp>
 #include <boost/asio.hpp>
-// #include <boost/beast/http.hpp>
+#include <boost/bind/bind.hpp>
 #include <boost/optional.hpp>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/variant.hpp>
@@ -30,7 +22,6 @@ namespace SDA
   const std::string SENEC_IP = "192.168.178.40";
   const std::string SENEC_REQUEST = "{\"PM1OBJ1\":{}, \"PM1OBJ2\":{}, \"BAT1OBJ1\":{}, \"STATISTIC\":{}}";
 
-  // const std::string SENEC_REQUEST = "{\"PM1OBJ1\":{\"FREQ\":\"\",\"U_AC\":\"\",\"I_AC\":\"\",\"P_AC\":\"\",\"P_TOTAL\":\"\"}}";
   const std::string POST_REQUEST = POST + BLANK + SENEC_PATH + BLANK + HTTP_VERSION + CRLF +
                                    HOST + BLANK + HTTP + SENEC_IP + CRLF +
                                    USER_AGENT + BLANK + USER_AGENT_VALUE + CRLF +

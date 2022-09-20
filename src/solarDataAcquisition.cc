@@ -5,8 +5,7 @@ using namespace SDA;
 
 SolarDataAcquisition::SolarDataAcquisition()
     : mEndpoint(), mResolver(mIoService), mTcpSocket(mIoService, mEndpoint.protocol())
-{
-}
+{}
 
 int SolarDataAcquisition::operator()()
 {
@@ -73,7 +72,6 @@ void SolarDataAcquisition::ReadHandler(const boost::system::error_code &ec, size
   {
     if (ec.message() != "End of file")
       std::cout << "\nRead failed with msg: " << ec.message() << '\n'; // ToDo: Replace console output
-    // std::cout << '\n' << mResponse << '\n'; // ToDo: Replace console output
   }
   else
   {
@@ -95,27 +93,25 @@ void SolarDataAcquisition::ProcessResponse()
 {
   split_vector_type SplitVec;
   boost::split(SplitVec, mResponse, boost::is_any_of("'\r\n'"), boost::token_compress_on);
-  std::cout << '\n'
-            << "Buffer splitted into " << SplitVec.size() << " vectors." << '\n';
-  int n = 0;
-  for (auto it : SplitVec)
+  for (auto& it : SplitVec)
   {
     if (it.find("xl6625883") != it.npos)
     {
-      std::cout << n << ": " << it << '\n';
       boost::algorithm::trim(it);
-      std::cout << it << '\n';
       split_vector_type SplitLine;
       boost::split(SplitLine, it, boost::is_any_of("><"), boost::token_compress_on);
-      std::cout << '\n'
-            << "Line splitted into " << SplitLine.size() << " vectors." << '\n';
-
+      if (SplitLine.size() > 2)
+      {
+        std::string str = SplitLine.at(SplitLine.size()-2);
+        if (str == "/td")
+        {
+          std::string& float_str =  SplitLine.at(SplitLine.size()-3);
+          auto x = std::find(float_str.begin(),float_str.end(),',');
+          std::string dot(".");
+          float_str.replace(x,x+1,dot.c_str());
+          std::cout << std::stof(float_str) << '\n';
+        }
+      }
     }
-    n++;  
   }
-
-  // std::stringstream ss;
-  // ss.clear();
-  // ss << mResponse.c_str();
-  // boost::property_tree::read_xml(ss, mTree);
 }

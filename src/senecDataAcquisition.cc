@@ -5,12 +5,14 @@
 #include <boost/property_tree/json_parser.hpp>
 
 using namespace boost::asio;
+using namespace boost::placeholders;
 using namespace SDA;
 
 SenecDataAcquisition::SenecDataAcquisition()
-    : mEndpoint(ip::address::from_string(SENEC_IP), mPort), mResolver(mIoService), mTcpSocket(mIoService, mEndpoint.protocol())
-{
-}
+    : mEndpoint(ip::address::from_string(SENEC_IP), mPort)
+    , mResolver(mIoService)
+    , mTcpSocket(mIoService, mEndpoint.protocol())
+{}
 
 int SenecDataAcquisition::operator()()
 {
@@ -40,7 +42,8 @@ int SenecDataAcquisition::operator()()
   return 0;
 }
 
-void SenecDataAcquisition::ResolveHandler(const boost::system::error_code &ec, boost::asio::ip::tcp::resolver::results_type results)
+void SenecDataAcquisition::ResolveHandler(const boost::system::error_code &ec,
+                                          boost::asio::ip::tcp::resolver::results_type results)
 {
   if (ec)
   {
@@ -71,7 +74,7 @@ void SenecDataAcquisition::ReadHandler(const boost::system::error_code &ec, size
   if (ec)
   {
     if (ec.message() != "End of file")
-      std::cout << "\nRead failed with msg: " << ec.message() << '\n'; // ToDo: Replace console output
+      std::cout << "\nRead failed with msg: " << ec.message() << '\n'; // ToDo: Replace console output, add logger
   }
   else
   {
@@ -93,13 +96,9 @@ void SenecDataAcquisition::ProcessResponse()
 {
   split_vector_type SplitVec;
   boost::split(SplitVec, mResponse, boost::is_any_of("'\r\n'"), boost::token_compress_on);
-  // std::cout << '\n'
-  //           << "Buffer splitted into " << SplitVec.size() << " vectors." << '\n';
-  
   std::stringstream ss;
   ss.clear();
-  ss << SplitVec[SplitVec.size() - 1].c_str();
-  // std::cout << ss.str() << '\n';
+  ss << SplitVec.back().c_str();
   boost::property_tree::read_json(ss, mTree);
 
   std::string frequency = mTree.get<std::string>("PM1OBJ1.FREQ");
@@ -127,16 +126,3 @@ ConversionResultOpt SenecDataAcquisition::GetGridPower() const
   ConversionResultOpt power_1_cr = Conversion::Convert(power_1);
   return power_1_cr;
 }
-
-  // std::ofstream out("response.json");
-  // out << SplitVec[SplitVec.size()-1].c_str();
-  // out.close();
-
-  // float y = Conversion::ConvertToFloat(test);
-  // std::cout << "y: " << y << '\n';
-
-  // std::cout << "Variant:" << '\n';
-  // boost::variant< uint, float> var(1.2f);
-  // boost::apply_visitor(Converter(), var);
-
-  // ToDo: remove comments

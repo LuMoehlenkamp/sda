@@ -1,0 +1,13 @@
+@startuml SDA Klassendiagramm
+
+class SenecDataAcquisition
+Interface ISenecResultPublisher
+class SenecResultPublisher
+struct SenecResult
+
+SenecResultPublisher ..|> ISenecResultPublisher
+SenecDataAcquisition  *-- SenecResultPublisher
+SenecResultPublisher - SenecResult : uses
+SenecDataAcquisition - SenecResult : uses
+
+@enduml

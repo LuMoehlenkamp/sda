@@ -30,6 +30,10 @@ namespace SDA
   const std::string ACCEPT_LANGUAGE = "Accept-Language:";
   const std::string ACCEPT_LANGUAGE_VALUE = "en-US,en;q=0.5";
 
+  const std::string EOF_MESSAGE = "End of file";
+
+  const unsigned int HTTP_OK_STATUS = 200;
+
   typedef std::vector<std::string> split_vector_type;
   typedef boost::property_tree::basic_ptree<std::string, std::string> ptree;
 }

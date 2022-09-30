@@ -2,6 +2,8 @@
 
 #include <array>
 #include <iostream>
+#include <istream>
+#include <ostream>
 #include <string>
 
 #include <boost/algorithm/string.hpp>
@@ -44,23 +46,32 @@ namespace SDA
   class SenecDataAcquisition
   {
   public:
-    SenecDataAcquisition();
-    int operator()();
-    void ResolveHandler(const boost::system::error_code &ec, boost::asio::ip::tcp::resolver::results_type results);
-    void ConnectHandler(const boost::system::error_code &ec);
-    void ReadHandler(const boost::system::error_code &ec, size_t amountOfBytes);
+    SenecDataAcquisition(boost::asio::io_context& ioContext, unsigned int TimerDuration);
+    void Aquire();
+    void ResolveHandler(const boost::system::error_code& ec,
+                        const boost::asio::ip::tcp::resolver::results_type& endpoints);
+    void ConnectHandler(const boost::system::error_code& ec);
+    void WriteRequestHandler(const boost::system::error_code& ec);
+    // void ReadHandler(const boost::system::error_code& ec, size_t amountOfBytes);
+    void ReadStatushandler(const boost::system::error_code& ec);
+    void ReadHeaderHandler(const boost::system::error_code& ec);
+    void ReadContentHandler(const boost::system::error_code& ec);
     void ProcessResponse();
     ConversionResultOpt GetGridPower() const;
 
   private:
     const unsigned short mPort = 80;
     boost::asio::ip::tcp::endpoint mEndpoint;
-    boost::asio::io_service mIoService;
+    boost::asio::io_context& mrIoContext;
     boost::asio::ip::tcp::resolver mResolver;
     boost::asio::ip::tcp::socket mTcpSocket;
     std::array<char, 1024> mDataBuffer = {0};
-    std::string mResponse;
+    // std::string mResponse;
     ptree mTree;
+    unsigned int mTimerDuration;
+    boost::asio::steady_timer mTimer;
+    boost::asio::streambuf mRequest;
+    boost::asio::streambuf mResponse;
   };
 
 }

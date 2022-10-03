@@ -1,6 +1,10 @@
 #include "senecDataAcquisition.hh"
+#include "senecResultDto.hh"
 #include "conversion.hh"
 #include "converter.hh"
+
+#include <fstream>
+#include <chrono>
 
 #include <boost/property_tree/json_parser.hpp>
 
@@ -50,7 +54,7 @@ void SenecDataAcquisition::ResolveHandler(const boost::system::error_code& ec,
   else
   {
     ip::tcp::endpoint endpoint = *endpoints;
-    std::cout << "Resolved address: " << endpoint.address() << ':' << endpoint.port() << '\n';
+    // std::cout << "Resolved address: " << endpoint.address() << ':' << endpoint.port() << '\n';
     async_connect(mTcpSocket, endpoints,
       bind(&SenecDataAcquisition::ConnectHandler,
            this,
@@ -62,8 +66,7 @@ void SenecDataAcquisition::ConnectHandler(const system::error_code &ec)
 {
   if (!ec)
   {
-    std::cout << "Connection established!" << '\n';
-
+    // std::cout << "Connection established!" << '\n';
     std::ostream req_stream(&mRequest);
     req_stream << SDA::POST_REQUEST;
     async_write(mTcpSocket, mRequest,
@@ -117,7 +120,7 @@ SenecDataAcquisition::ReadStatushandler(const boost::system::error_code& ec)
       std::cout << status_code << "\n";
       return;
     }
-    std::cout << http_version << '\n';
+    // std::cout << http_version << '\n';
     async_read_until(mTcpSocket, mResponse, "\r\n\r\n",
       bind(&SenecDataAcquisition::ReadHeaderHandler,
            this,
@@ -136,9 +139,10 @@ SenecDataAcquisition::ReadHeaderHandler(const boost::system::error_code& ec)
   {
     std::istream response_stream(&mResponse);
     std::string header;
-    while (std::getline(response_stream, header) && header != "\r")
-      std::cout << header << '\n';
-    std::cout << '\n';
+    std::getline(response_stream, header);
+    // while (std::getline(response_stream, header) && header != "\r")
+    //   std::cout << header << '\n';
+    // std::cout << '\n';
 
     boost::asio::async_read(mTcpSocket, mResponse,
       transfer_at_least(1),
@@ -185,30 +189,71 @@ SenecDataAcquisition::ProcessResponse()
   mTree.clear();
   std::istream response_stream(&mResponse);
   boost::property_tree::read_json(response_stream, mTree);
+  std::string filename = "test.json";
+  std::fstream f_stream(filename, f_stream.binary | f_stream.trunc | f_stream.in | f_stream.out);
+  boost::property_tree::write_json(f_stream, mTree);
+  senecResultDto resultDto;
 
-  std::string frequency = mTree.get<std::string>("PM1OBJ1.FREQ");
-  std::cout << "frequency obj.: " << frequency << '\n';
-  ConversionResultOpt frequency_cr = Conversion::Convert(frequency);
-  if (frequency_cr)
-    std::cout<< "frequency cr: " << frequency_cr << '\n';
+  auto time_of_measurement = std::chrono::system_clock::now();
+  time_t tt;
+  tt = std::chrono::system_clock::to_time_t ( time_of_measurement);
+  std::cout << "meas time: " << ctime(&tt);
+  resultDto.mTimeOfMeasurement = time_of_measurement;
 
-  ConversionResultOpt power_1_cr = GetGridPower();
-  if (power_1_cr)
-    std::cout<< "power 1 cr: " << power_1_cr << '\n';
+  ConversionResultOpt grid_power_cr = GetGridPower();
+  if (grid_power_cr)
+  {
+    std::cout<< "grid power: " << grid_power_cr.get() << '\n';
+    resultDto.mPowerGrid = boost::get<float>(grid_power_cr.get());
+  }
 
-  std::string power_2 = mTree.get<std::string>("PM1OBJ2.P_TOTAL");
-  std::cout << "P total 2 obj.: " << power_2 << '\n';
-  ConversionResultOpt power_2_cr = Conversion::Convert(power_2);
-  if (power_2_cr)
-    std::cout << "power 2 cr: " << power_2_cr << '\n';
-    std::cout << '\n';
+  ConversionResultOpt generator_power_cr = GetGeneratorPower();
+  if (generator_power_cr)
+  {
+    std::cout << "generator power: " << generator_power_cr.get() << '\n';
+    resultDto.mPowerGen = boost::get<float>(generator_power_cr.get());
+  }
+
+  std::string house_power = mTree.get<std::string>("ENERGY.GUI_HOUSE_POW");
+  ConversionResultOpt house_power_cr = Conversion::Convert(house_power);
+  if (house_power_cr)
+  {
+    std::cout<< "house_consumption: " << house_power_cr.get() << '\n';
+    resultDto.mPowerHouse = boost::get<float>(house_power_cr.get());
+  }
+
+  std::string bat_power = mTree.get<std::string>("ENERGY.GUI_BAT_DATA_POWER");
+  ConversionResultOpt bat_power_cr = Conversion::Convert(bat_power);
+  if (bat_power_cr)
+  {
+    std::cout<< "bat power: " << bat_power_cr.get() << '\n';
+    resultDto.mPowerBat = boost::get<float>(bat_power_cr.get());
+  }
+
+  std::string bat_charge = mTree.get<std::string>("ENERGY.GUI_BAT_DATA_FUEL_CHARGE");
+  ConversionResultOpt bat_charge_cr = Conversion::Convert(bat_charge);
+  if (bat_charge_cr)
+  {
+    std::cout<< "bat charge: " << bat_charge_cr.get() << '\n';
+    resultDto.mChargingLevel = boost::get<float>(bat_charge_cr.get());
+  }
+
+  std::cout << '\n';
+
 }
 
 ConversionResultOpt 
 SenecDataAcquisition::GetGridPower() const
 {
-  std::string power_1 = mTree.get<std::string>(SDA::P_TOTAL_PCC);
-  std::cout << "P total 1 obj.: " << power_1 << '\n'; // todo: Remove after testing
-  ConversionResultOpt power_1_cr = Conversion::Convert(power_1);
-  return power_1_cr;
+  std::string power = mTree.get<std::string>(SDA::P_TOTAL_PCC);
+  ConversionResultOpt power_cr = Conversion::Convert(power);
+  return power_cr;
+}
+
+ConversionResultOpt
+SenecDataAcquisition::GetGeneratorPower() const
+{
+  std::string power = mTree.get<std::string>(SDA::P_TOTAL_PV);
+  ConversionResultOpt power_cr = Conversion::Convert(power);
+  return power_cr; 
 }

@@ -22,7 +22,7 @@ namespace SDA
   const std::string SENEC_PATH = "/lala.cgi";
   
   const std::string SENEC_IP = "192.168.178.40";
-  const std::string SENEC_REQUEST = "{\"PM1OBJ1\":{}, \"PM1OBJ2\":{}, \"BAT1OBJ1\":{}, \"STATISTIC\":{}}";
+  const std::string SENEC_REQUEST = "{\"PM1OBJ1\":{}, \"PM1OBJ2\":{}, \"BAT1OBJ1\":{}, \"STATISTIC\":{}, \"ENERGY\":{}}";
 
   const std::string POST_REQUEST = POST + BLANK + SENEC_PATH + BLANK + HTTP_VERSION + CRLF +
                                    HOST + BLANK + HTTP + SENEC_IP + CRLF +
@@ -58,6 +58,7 @@ namespace SDA
     void ReadContentHandler(const boost::system::error_code& ec);
     void ProcessResponse();
     ConversionResultOpt GetGridPower() const;
+    ConversionResultOpt GetGeneratorPower() const;
 
   private:
     const unsigned short mPort = 80;

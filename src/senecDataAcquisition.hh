@@ -52,7 +52,6 @@ namespace SDA
                         const boost::asio::ip::tcp::resolver::results_type& endpoints);
     void ConnectHandler(const boost::system::error_code& ec);
     void WriteRequestHandler(const boost::system::error_code& ec);
-    // void ReadHandler(const boost::system::error_code& ec, size_t amountOfBytes);
     void ReadStatushandler(const boost::system::error_code& ec);
     void ReadHeaderHandler(const boost::system::error_code& ec);
     void ReadContentHandler(const boost::system::error_code& ec);
@@ -66,8 +65,6 @@ namespace SDA
     boost::asio::io_context& mrIoContext;
     boost::asio::ip::tcp::resolver mResolver;
     boost::asio::ip::tcp::socket mTcpSocket;
-    std::array<char, 1024> mDataBuffer = {0};
-    // std::string mResponse;
     ptree mTree;
     unsigned int mTimerDuration;
     boost::asio::steady_timer mTimer;

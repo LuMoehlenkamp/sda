@@ -14,22 +14,22 @@ using namespace boost::placeholders;
 using namespace SDA;
 
 SenecDataAcquisition::SenecDataAcquisition(io_context& ioContext, unsigned int TimerDuration)
-    : mEndpoint(ip::address::from_string(SENEC_IP), mPort)
-    , mrIoContext(ioContext)
-    , mResolver(mrIoContext)
-    , mTcpSocket(mrIoContext, mEndpoint.protocol())
-    , mTimerDuration(TimerDuration)
-    , mTimer(ioContext, chrono::seconds(mTimerDuration))
+  : mEndpoint(ip::address::from_string(SENEC_IP), mPort)
+  , mrIoContext(ioContext)
+  , mResolver(mrIoContext)
+  , mTcpSocket(mrIoContext, mEndpoint.protocol())
+  , mTimerDuration(TimerDuration)
+  , mTimer(ioContext, chrono::seconds(mTimerDuration))
 {
   mTimer.async_wait(bind(&SenecDataAcquisition::Aquire, this));
 }
 
-void SenecDataAcquisition::Aquire()
+void
+SenecDataAcquisition::Aquire()
 {
   try
   {
     ip::tcp::resolver::query Query(SENEC_IP,"80");
-    mDataBuffer = {0};
     mResolver.async_resolve(SENEC_IP, "http",
       bind(&SenecDataAcquisition::ResolveHandler, 
            this, 
@@ -44,7 +44,8 @@ void SenecDataAcquisition::Aquire()
   }
 }
 
-void SenecDataAcquisition::ResolveHandler(const boost::system::error_code& ec,
+void 
+SenecDataAcquisition::ResolveHandler(const boost::system::error_code& ec,
                                           const ip::tcp::resolver::results_type& endpoints)
 {
   if (ec)
@@ -62,7 +63,8 @@ void SenecDataAcquisition::ResolveHandler(const boost::system::error_code& ec,
   }
 }
 
-void SenecDataAcquisition::ConnectHandler(const system::error_code &ec)
+void 
+SenecDataAcquisition::ConnectHandler(const system::error_code& ec)
 {
   if (!ec)
   {

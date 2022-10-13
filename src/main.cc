@@ -16,7 +16,7 @@ int main(int argc, char *argv[])
     boost::asio::make_work_guard(ioContext);
 
   SDA::SenecDataAcquisition senec_da(ioContext, 15U);
-  // SDA::SolarDataAcquisition solar_da(ioContext, 10U);
+  SDA::SolarDataAcquisition solar_da(ioContext, 15U);
 
   ioContext.run();
   

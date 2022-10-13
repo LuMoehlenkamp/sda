@@ -1,98 +1,182 @@
 #include "solarDataAcquisition.hh"
 
+#include <fstream>
+#include <chrono>
+
+using namespace boost;
 using namespace boost::asio;
+using namespace boost::placeholders;
 using namespace SDA;
 
-SolarDataAcquisition::SolarDataAcquisition()
-    : mEndpoint(), mResolver(mIoService), mTcpSocket(mIoService, mEndpoint.protocol())
-{}
+SolarDataAcquisition::SolarDataAcquisition(io_context& ioContext, unsigned int TimerDuration)
+  : mrIoContext(ioContext)
+  , mResolver(mrIoContext)
+  , mTcpSocket(mrIoContext)
+  , mTimerDuration(TimerDuration)
+  , mTimer(ioContext, chrono::seconds(mTimerDuration))
+{
+  mTimer.async_wait(bind(&SolarDataAcquisition::Aquire, this));
+}
 
-int SolarDataAcquisition::operator()()
+void
+SolarDataAcquisition::Aquire()
 {
   try
   {
-    std::cout << "start connecting solar forecast service with Request: " << '\n' << GET_REQUEST << '\n';
-    boost::asio::ip::tcp::resolver::query Query(SOLAR_HOST, "80");
-    mDataBuffer = {0};
+    ip::tcp::resolver::query Query(SOLAR_HOST, "80");
     mResolver.async_resolve(Query,
-                            std::bind(&SolarDataAcquisition::ResolveHandler,
-                                      this,
-                                      std::placeholders::_1,
-                                      std::placeholders::_2));
-    mIoService.run();
+      bind(&SolarDataAcquisition::ResolveHandler,
+           this,
+           boost::asio::placeholders::error,
+           boost::asio::placeholders::results));
+    mTimer.expires_after(chrono::seconds(mTimerDuration));
+    mTimer.async_wait(boost::bind(&SolarDataAcquisition::Aquire, this));
   }
   catch (boost::system::system_error &e)
   {
     std::cerr << e.what() << '\n';
-    return e.code().value();
   }
-  ProcessResponse();
-  mIoService.stop();
-  mTcpSocket.close();
-  return 0;
 }
 
-void SolarDataAcquisition::ResolveHandler(const boost::system::error_code &ec, boost::asio::ip::tcp::resolver::results_type results)
+void
+SolarDataAcquisition::ResolveHandler(const boost::system::error_code &ec,
+                                     const ip::tcp::resolver::results_type& endpoints)
 {
-  if (ec)
+  if (!ec)
+  {
+    async_connect(mTcpSocket, endpoints, 
+      bind(&SolarDataAcquisition::ConnectHandler,
+           this,
+           boost::asio::placeholders::error));
+  }
+  else
   {
     std::cout << "Resolve failed with message: " << ec.message() << '\n';
   }
-  else
-  {
-    mEndpoint = *results;
-    std::cout << "Resolved address: " << mEndpoint.address() << ':' << mEndpoint.port() << '\n';
-    mTcpSocket.async_connect(mEndpoint, std::bind(&SolarDataAcquisition::ConnectHandler, this, std::placeholders::_1));
-  }
 }
 
-void SolarDataAcquisition::ConnectHandler(const boost::system::error_code &ec)
+void 
+SolarDataAcquisition::ConnectHandler(const system::error_code& ec)
 {
-  if (ec)
+  std::istream response_stream(&mResponse);
+  response_stream.clear();
+  if (!ec)
+  {
+    std::ostream req_stream(&mRequest);
+    req_stream << SDA::GET_REQUEST;
+    async_write(mTcpSocket, mRequest,
+      bind(&SolarDataAcquisition::WriteRequestHandler,
+           this,
+           boost::asio::placeholders::error));
+  }
+  else
   {
     std::cout << "Connect failed with message: " << ec.message() << '\n';
   }
-  else
-  {
-    std::cout << "Connection established!" << '\n';
-    mResponse.clear();
-    write(mTcpSocket, buffer(SDA::GET_REQUEST));
-    mDataBuffer = {0};
-    mTcpSocket.async_read_some(buffer(mDataBuffer),
-                               std::bind( &SolarDataAcquisition::ReadHandler,
-                                          this,
-                                          std::placeholders::_1,
-                                          std::placeholders::_2));
-  }
 }
 
-void SolarDataAcquisition::ReadHandler(const boost::system::error_code &ec, size_t amountOfBytes)
+void 
+SolarDataAcquisition::WriteRequestHandler(const boost::system::error_code& ec)
 {
-  if (ec)
+  if (!ec)
   {
-    if (ec.message() != "End of file")
-      std::cout << "\nRead failed with msg: " << ec.message() << '\n'; // ToDo: Replace console output
+    async_read_until(mTcpSocket, mResponse, SDA::CRLF,
+      bind(&SolarDataAcquisition::ReadStatusHandler,
+           this,
+           boost::asio::placeholders::error));
   }
   else
   {
-    for (auto it : mDataBuffer)
+    std::cout << "Error: " << ec.message() << '\n';
+  }  
+}
+
+void 
+SolarDataAcquisition::ReadStatusHandler(const boost::system::error_code& ec)
+{
+  if (!ec)
+  {
+    std::istream response_stream(&mResponse);
+    std::string http_version;
+    response_stream >> http_version;
+    unsigned int status_code;
+    response_stream >> status_code;
+    std::string status_message;
+    std::getline(response_stream, status_message);
+    if (!response_stream || http_version.substr(0, 5) != "HTTP/")
     {
-      if (it != '\000')
-        mResponse.push_back(it);
+      std::cout << "Invalid response\n";
+      return;
     }
-    mDataBuffer = {0};
-    mTcpSocket.async_read_some(buffer(mDataBuffer),
-                               std::bind(&SolarDataAcquisition::ReadHandler,
-                                         this,
-                                         std::placeholders::_1,
-                                         std::placeholders::_2));
+    if (status_code != HTTP_OK_STATUS)
+    {
+      std::cout << "Response returned with status code: "
+                << status_code << "\n";
+      return;
+    }
+    async_read_until(mTcpSocket, mResponse, "\r\n\r\n",
+      bind(&SolarDataAcquisition::ReadHeaderHandler,
+           this,
+           boost::asio::placeholders::error));
+  }
+  else
+  {
+    std::cout << "Error: " << ec.message() << "\n";
   }
 }
 
-void SolarDataAcquisition::ProcessResponse()
+void
+SolarDataAcquisition::ReadHeaderHandler(const boost::system::error_code& ec)
 {
+  if (!ec)
+  {
+    std::istream response_stream(&mResponse);
+    std::string header;
+    std::getline(response_stream, header);
+    while (std::getline(response_stream, header) && header != "\r")
+      ;// ToDo: find another solution
+    async_read(mTcpSocket, mResponse,
+               transfer_at_least(1),
+               bind(&SolarDataAcquisition::ReadContentHandler,
+                    this,
+                    boost::asio::placeholders::error));
+  }
+  else
+  {
+    std::cout << "Error: " << ec.message() << '\n';
+  }
+}
+
+void
+SolarDataAcquisition::ReadContentHandler(const boost::system::error_code& ec)
+{
+  if (!ec)
+  {
+    async_read(mTcpSocket, mResponse,
+               transfer_at_least(1),
+               bind(&SolarDataAcquisition::ReadContentHandler,
+                    this,
+                    boost::asio::placeholders::error));
+  }
+  else
+  if (ec != boost::asio::error::eof)
+  {
+    std::cout << "Content Error: " << ec.message() << '\n';
+  }
+  else
+  {
+    ProcessResponse();
+  }
+}
+
+void
+SolarDataAcquisition::ProcessResponse()
+{
+  std::istream response_stream(&mResponse);
+  std::string response( (std::istreambuf_iterator<char>(&mResponse)), std::istreambuf_iterator<char>() );
+  
   split_vector_type SplitVec;
-  boost::split(SplitVec, mResponse, boost::is_any_of("'\r\n'"), boost::token_compress_on);
+  boost::split(SplitVec, response, boost::is_any_of("'\r\n'"), boost::token_compress_on);
   for (auto& it : SplitVec)
   {
     if (it.find("xl6625883") != it.npos)
@@ -114,4 +198,6 @@ void SolarDataAcquisition::ProcessResponse()
       }
     }
   }
+  // mResponse.consume(mResponse.size());
+  // response_stream.clear();
 }

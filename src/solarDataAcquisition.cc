@@ -198,6 +198,4 @@ SolarDataAcquisition::ProcessResponse()
       }
     }
   }
-  // mResponse.consume(mResponse.size());
-  // response_stream.clear();
 }

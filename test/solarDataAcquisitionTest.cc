@@ -7,13 +7,16 @@ BOOST_AUTO_TEST_SUITE(SolarDataAcquisitionTest)
 BOOST_AUTO_TEST_CASE(first_and_only_test_case)
 {
   BOOST_TEST_MESSAGE("starting unit tests\n");
-  SDA::SolarDataAcquisition sda;
+  boost::asio::io_context ioContext;
+  boost::asio::executor_work_guard<boost::asio::io_context::executor_type> work =
+    boost::asio::make_work_guard(ioContext);
+  SDA::SolarDataAcquisition sda(ioContext, 1U);
   boost::timer::cpu_timer timer;
 
-  int result = sda();
+  sda.Aquire();
 
   std::cout << timer.format() << '\n';
-  BOOST_REQUIRE(result == 0);
+  BOOST_REQUIRE(true);
   BOOST_TEST_MESSAGE("unit testing finished\n");
 }
 

@@ -199,20 +199,17 @@ SenecDataAcquisition::ProcessResponse()
   auto time_of_measurement = std::chrono::system_clock::now();
   time_t tt;
   tt = std::chrono::system_clock::to_time_t ( time_of_measurement);
-  std::cout << "meas time: " << ctime(&tt);
   resultDto.mTimeOfMeasurement = time_of_measurement;
 
   ConversionResultOpt grid_power_cr = GetGridPower();
   if (grid_power_cr)
   {
-    std::cout<< "grid power: " << grid_power_cr.get() << '\n';
     resultDto.mPowerGrid = boost::get<float>(grid_power_cr.get());
   }
 
   ConversionResultOpt generator_power_cr = GetGeneratorPower();
   if (generator_power_cr)
   {
-    std::cout << "generator power: " << generator_power_cr.get() << '\n';
     resultDto.mPowerGen = boost::get<float>(generator_power_cr.get());
   }
 
@@ -220,7 +217,6 @@ SenecDataAcquisition::ProcessResponse()
   ConversionResultOpt house_power_cr = Conversion::Convert(house_power);
   if (house_power_cr)
   {
-    std::cout<< "house_consumption: " << house_power_cr.get() << '\n';
     resultDto.mPowerHouse = boost::get<float>(house_power_cr.get());
   }
 
@@ -228,7 +224,6 @@ SenecDataAcquisition::ProcessResponse()
   ConversionResultOpt bat_power_cr = Conversion::Convert(bat_power);
   if (bat_power_cr)
   {
-    std::cout<< "bat power: " << bat_power_cr.get() << '\n';
     resultDto.mPowerBat = boost::get<float>(bat_power_cr.get());
   }
 
@@ -236,11 +231,10 @@ SenecDataAcquisition::ProcessResponse()
   ConversionResultOpt bat_charge_cr = Conversion::Convert(bat_charge);
   if (bat_charge_cr)
   {
-    std::cout<< "bat charge: " << bat_charge_cr.get() << '\n';
     resultDto.mChargingLevel = boost::get<float>(bat_charge_cr.get());
   }
 
-  std::cout << '\n';
+  mrSubject.Notify(resultDto);
 
 }
 
@@ -258,4 +252,10 @@ SenecDataAcquisition::GetGeneratorPower() const
   std::string power = mTree.get<std::string>(SDA::P_TOTAL_PV);
   ConversionResultOpt power_cr = Conversion::Convert(power);
   return power_cr; 
+}
+
+SenecResultSubject& 
+SenecDataAcquisition::GetResultSubject()
+{
+  return mrSubject;
 }

@@ -9,6 +9,8 @@
 #include "senecDataAcquisition.hh"
 #include "solarDataAcquisition.hh"
 
+#include "senecResultObserver.hh"
+
 int main(int argc, char *argv[])
 {
   boost::asio::io_context ioContext;
@@ -17,6 +19,9 @@ int main(int argc, char *argv[])
 
   SDA::SenecDataAcquisition senec_da(ioContext, 15U);
   SDA::SolarDataAcquisition solar_da(ioContext, 15U);
+
+  auto& senec_rs = senec_da.GetResultSubject();
+  SDA::SenecResultObserver observer(senec_rs);
 
   ioContext.run();
   

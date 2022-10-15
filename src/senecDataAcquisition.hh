@@ -14,11 +14,10 @@
 #include <boost/variant.hpp>
 
 #include "dataAcquisitionDefines.hh"
+#include "senecResultSubject.hh"
 
 namespace SDA
-{
-  
-  
+{  
   const std::string SENEC_PATH = "/lala.cgi";
   
   const std::string SENEC_IP = "192.168.178.40";
@@ -37,7 +36,6 @@ namespace SDA
   const std::string P_TOTAL_PCC = "PM1OBJ1.P_TOTAL";
   const std::string P_TOTAL_PV = "PM1OBJ2.P_TOTAL";
 
-  
   typedef boost::variant<uint, float> ConversionResult;
   typedef boost::optional<ConversionResult> ConversionResultOpt;
   
@@ -58,6 +56,7 @@ namespace SDA
     void ProcessResponse();
     ConversionResultOpt GetGridPower() const;
     ConversionResultOpt GetGeneratorPower() const;
+    SenecResultSubject& GetResultSubject();
 
   private:
     const unsigned short mPort = 80;
@@ -70,6 +69,7 @@ namespace SDA
     boost::asio::steady_timer mTimer;
     boost::asio::streambuf mRequest;
     boost::asio::streambuf mResponse;
+    SenecResultSubject mrSubject;
   };
 
 }

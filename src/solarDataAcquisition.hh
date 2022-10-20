@@ -8,11 +8,9 @@
 
 #include <boost/algorithm/string.hpp>
 #include <boost/asio.hpp>
-#include <boost/bind/bind.hpp>
 #include <boost/optional.hpp>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/xml_parser.hpp>
-#include <boost/variant.hpp>
 
 #include "dataAcquisitionDefines.hh"
 

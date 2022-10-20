@@ -14,7 +14,7 @@ class SenecResultSubject : public ISenecResultSubject
 public:
   virtual ~SenecResultSubject()
   {
-    std::cout << "Goodbye, I was the Subject.\n";
+    // std::cout << "Goodbye, I was the Subject.\n"; // ToDo: Replace with Logging
   }
 
   void Attach(ISenecResultObserver *observer) override
@@ -37,7 +37,7 @@ public:
 
   void HowManyObserver()
   {
-    std::cout << "There are " << mObserverList.size() << " observers in the list.\n";
+    // std::cout << "There are " << mObserverList.size() << " observers in the list.\n"; 
   }
 
  private:

@@ -6,6 +6,7 @@
 #include <fstream>
 #include <chrono>
 
+#include <boost/bind/bind.hpp>
 #include <boost/property_tree/json_parser.hpp>
 
 using namespace boost;
@@ -19,7 +20,7 @@ SenecDataAcquisition::SenecDataAcquisition(io_context& ioContext, unsigned int T
   , mResolver(mrIoContext)
   , mTcpSocket(mrIoContext, mEndpoint.protocol())
   , mTimerDuration(TimerDuration)
-  , mTimer(ioContext, chrono::seconds(mTimerDuration))
+  , mTimer(ioContext, chrono::seconds(INITIAL_TIMER_DURATION))
 {
   mTimer.async_wait(bind(&SenecDataAcquisition::Aquire, this));
 }

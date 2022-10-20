@@ -1,5 +1,7 @@
 #include "solarDataAcquisition.hh"
 
+#include <boost/bind/bind.hpp>
+
 #include <fstream>
 #include <chrono>
 
@@ -13,7 +15,7 @@ SolarDataAcquisition::SolarDataAcquisition(io_context& ioContext, unsigned int T
   , mResolver(mrIoContext)
   , mTcpSocket(mrIoContext)
   , mTimerDuration(TimerDuration)
-  , mTimer(ioContext, chrono::seconds(mTimerDuration))
+  , mTimer(ioContext, chrono::seconds(INITIAL_TIMER_DURATION))
 {
   mTimer.async_wait(bind(&SolarDataAcquisition::Aquire, this));
 }
@@ -132,9 +134,10 @@ SolarDataAcquisition::ReadHeaderHandler(const boost::system::error_code& ec)
   {
     std::istream response_stream(&mResponse);
     std::string header;
-    std::getline(response_stream, header);
-    while (std::getline(response_stream, header) && header != "\r")
-      ;// ToDo: find another solution
+    while ( header != "\r")
+    {
+      std::getline(response_stream, header);
+    }
     async_read(mTcpSocket, mResponse,
                transfer_at_least(1),
                bind(&SolarDataAcquisition::ReadContentHandler,

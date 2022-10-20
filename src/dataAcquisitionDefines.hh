@@ -1,6 +1,5 @@
 #pragma once
 
-
 #include <string>
 #include <vector>
 #include <boost/property_tree/ptree.hpp>
@@ -33,7 +32,7 @@ namespace SDA
   const std::string EOF_MESSAGE = "End of file";
 
   const unsigned int HTTP_OK_STATUS = 200;
-
+  const unsigned INITIAL_TIMER_DURATION = 1;
   typedef std::vector<std::string> split_vector_type;
   typedef boost::property_tree::basic_ptree<std::string, std::string> ptree;
 }

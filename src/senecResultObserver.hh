@@ -11,13 +11,13 @@ class SenecResultObserver : public ISenecResultObserver {
     : mrSubject_(subject) 
   {
     this->mrSubject_.Attach(this);
-    std::cout << "Hi, I'm the Observer \"" << ++SenecResultObserver::mStaticNumber << "\".\n";
-    this->mNumber = SenecResultObserver::mStaticNumber;
+    // std::cout << "Hi, I'm the Observer \"" << ++SenecResultObserver::mStaticNumber << "\".\n"; // ToDo: Replace with Logging
+    // this->mNumber = SenecResultObserver::mStaticNumber;
   }
 
   virtual ~SenecResultObserver()
   {
-    std::cout << "Goodbye, I was the Observer \"" << this->mNumber << "\".\n";
+    // std::cout << "Goodbye, I was the Observer \"" << this->mNumber << "\".\n"; // ToDo: Replace with Logging
   }
 
   void Update(const senecResultDto& arDataFromSubject) override
@@ -27,11 +27,11 @@ class SenecResultObserver : public ISenecResultObserver {
   
   void RemoveMeFromTheList() {
     mrSubject_.Detach(this);
-    std::cout << "Observer \"" << mNumber << "\" removed from the list.\n";
+    // std::cout << "Observer \"" << mNumber << "\" removed from the list.\n"; // ToDo: Replace with Logging
   }
 
   void PrintInfo(const senecResultDto& arDataFromSubject) {
-    std::cout << "Observer_" << this->mNumber << ": a new message is available\n";
+    // std::cout << "Observer_" << this->mNumber << ": a new message is available\n"; // ToDo: Replace with Logging
     time_t tt;
     tt = std::chrono::system_clock::to_time_t ( arDataFromSubject.mTimeOfMeasurement);
     std::cout << "meas time: " << ctime(&tt)

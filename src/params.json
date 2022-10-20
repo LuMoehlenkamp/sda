@@ -1,0 +1,5 @@
+{
+  "testMode": true,
+  "senecUpdateTime_sec": "15",
+  "solarUpdateTime_sec": "3600"
+}

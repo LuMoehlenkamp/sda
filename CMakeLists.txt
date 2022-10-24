@@ -6,12 +6,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
 file(GLOB_RECURSE INC_FILES src/*.hh)
 file(GLOB_RECURSE SRC_FILES src/*.cc)
 
-# find_package(wiringpi)
-
-# add_executable(sda main.cc)
 add_subdirectory(src)
-# --- link against required libs ---
-# target_link_libraries(serialization boost_serialization)
 
 # testing
 include(CTest)
@@ -19,6 +14,6 @@ add_subdirectory(test)
 
 include_directories(${Boost_INCLUDE_DIRS})
 
-set(CPACK_PROJECT_NAME ${PROJECT_NAME})
-set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
-include(CPack)
+# packing
+set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+include(packing)

@@ -12,10 +12,11 @@
 
 int main(int argc, char *argv[])
 {
-  SDA::ConfigManager* p_config_manager = SDA::ConfigManager::GetInstance();
+  SDA::ConfigManager* p_config_manager = SDA::ConfigManager::GetInstance(SDA::CONFIG_PATH);
   auto testmode = p_config_manager->GetTestMode();
   auto senec_update_time = p_config_manager->GetSenecUpdateTime();
   auto solar_update_time = p_config_manager->GetSolarUpdateTime();
+
   if (!testmode)
   {
     if (wiringPiSetup () == -1)

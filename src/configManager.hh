@@ -1,8 +1,10 @@
 #pragma once
 
+#include <boost/foreach.hpp>
+#include <boost/optional.hpp>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/json_parser.hpp>
-#include <boost/foreach.hpp>
+#include <boost/property_tree/exceptions.hpp>
 #include <string>
 #include <set>
 #include <exception>
@@ -32,10 +34,10 @@ namespace SDA
     void operator=(const ConfigManager& arOther) = delete;
 
     static ConfigManager* GetInstance(const std::string arFilePathAndName);
-    bool GetTestMode();
-    unsigned GetSenecUpdateTime();
-    unsigned GetSolarUpdateTime();
-    void LoadConfig();
+    boost::optional<bool> GetTestMode();
+    boost::optional<unsigned> GetSenecUpdateTime();
+    boost::optional<unsigned> GetSolarUpdateTime();
+    bool LoadConfig();
   private:
     bool mConfigLoaded;
     std::string mFilePathAndName;
@@ -56,25 +58,32 @@ namespace SDA
     return mpConfigManager;
   }
 
-  bool
+  boost::optional<bool>
   ConfigManager::GetTestMode()
   {
     EnsureConfigLoaded();
-    return mTestMode;
+    std::cout << mFilePathAndName << '\n';
+    if (mConfigLoaded)
+      return mTestMode;
+    return boost::none;
   }
 
-  unsigned
+  boost::optional<unsigned>
   ConfigManager::GetSenecUpdateTime()
   {
     EnsureConfigLoaded();
-    return mSenecUpdateTime;
+    if (mConfigLoaded)
+      return mSenecUpdateTime;
+    return boost::none;
   }
 
-  unsigned
+  boost::optional<unsigned>
   ConfigManager::GetSolarUpdateTime()
   {
     EnsureConfigLoaded();
-    return mSolarUpdateTime;
+    if (mConfigLoaded)
+      return mSolarUpdateTime;
+    return boost::none;
   }
 
   void
@@ -83,17 +92,39 @@ namespace SDA
     if (mConfigLoaded)
       return;
 
-    LoadConfig();
-    mConfigLoaded = true;
+    mConfigLoaded = LoadConfig();
   }
 
-  void
+  bool
   ConfigManager::LoadConfig()
   {
-    boost::property_tree::ptree tree;
-    boost::property_tree::read_json(mFilePathAndName, tree);
-    mTestMode = tree.get("testMode", DEFAULT_TESTMODE);
-    mSenecUpdateTime = tree.get("senecUpdateTime_sec", DEFAULT_SENEC_UPDATE_TIME);
-    mSolarUpdateTime = tree.get("solarUpdateTime_sec", DEFAULT_SOLAR_UPDATE_TIME);
+    try
+    {
+      boost::property_tree::ptree tree;
+      boost::property_tree::read_json(mFilePathAndName, tree);
+      mTestMode = tree.get("testMode", DEFAULT_TESTMODE);
+      mSenecUpdateTime = tree.get("senecUpdateTime_sec", DEFAULT_SENEC_UPDATE_TIME);
+      mSolarUpdateTime = tree.get("solarUpdateTime_sec", DEFAULT_SOLAR_UPDATE_TIME);
+    }
+    catch(const boost::property_tree::json_parser_error& pt_e)
+    {
+      std::cerr << pt_e.what() << '\n';
+      return false;
+    }
+    catch(const boost::property_tree::ptree_bad_path& pt_bp_e)
+    {
+      std::cerr << pt_bp_e.what() << '\n';
+      return false;
+    }
+    catch(const std::exception& e)
+    {
+      std::cerr << e.what() << '\n';
+      return false;
+    }
+    catch (...)
+    {
+      return false;
+    }
+    return true;
   }
 }

@@ -13,9 +13,13 @@
 int main(int argc, char *argv[])
 {
   SDA::ConfigManager* p_config_manager = SDA::ConfigManager::GetInstance(SDA::CONFIG_PATH);
-  auto testmode = p_config_manager->GetTestMode();
-  auto senec_update_time = p_config_manager->GetSenecUpdateTime();
-  auto solar_update_time = p_config_manager->GetSolarUpdateTime();
+  auto testmode_opt = p_config_manager->GetTestMode();
+  auto senec_update_time_opt = p_config_manager->GetSenecUpdateTime();
+  auto solar_update_time_opt = p_config_manager->GetSolarUpdateTime();
+  
+  bool testmode = false;
+  if (testmode_opt)
+    testmode = testmode_opt.get();
 
   if (!testmode)
   {
@@ -30,8 +34,8 @@ int main(int argc, char *argv[])
   boost::asio::executor_work_guard<boost::asio::io_context::executor_type> work =
     boost::asio::make_work_guard(ioContext);
 
-  SDA::SenecDataAcquisition senec_da(ioContext, senec_update_time);
-  SDA::SolarDataAcquisition solar_da(ioContext, solar_update_time);
+  SDA::SenecDataAcquisition senec_da(ioContext, senec_update_time_opt.get());
+  SDA::SolarDataAcquisition solar_da(ioContext, solar_update_time_opt.get());
 
   auto& senec_rs = senec_da.GetResultSubject();
   SDA::SenecResultObserver observer(senec_rs);

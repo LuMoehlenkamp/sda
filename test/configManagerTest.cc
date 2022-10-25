@@ -15,6 +15,11 @@ struct ConfigManagerTestValidFixture
     mpConfigManager = SDA::ConfigManager::GetInstance(VALID_CONFIG_PATH);
   }
 
+  ~ConfigManagerTestValidFixture()
+  {
+    mpConfigManager->Reset();
+  }
+
   SDA::ConfigManager* mpConfigManager;
 };
 
@@ -23,6 +28,11 @@ struct ConfigManagerTestInvalidFixture
   ConfigManagerTestInvalidFixture()
   {
     mpConfigManager = SDA::ConfigManager::GetInstance(INVALID_CONFIG_PATH);
+  }
+
+  ~ConfigManagerTestInvalidFixture()
+  {
+    mpConfigManager->Reset();
   }
 
   SDA::ConfigManager* mpConfigManager;
@@ -52,7 +62,7 @@ BOOST_AUTO_TEST_SUITE_END()
 
 BOOST_FIXTURE_TEST_SUITE(ConfigManagerTest_Invalid, ConfigManagerTestInvalidFixture)
 
-BOOST_AUTO_TEST_CASE(GetInstance_InvalidPath_Throws)
+BOOST_AUTO_TEST_CASE(GetInstance_InvalidPath_DoesNotThrow)
 {
   BOOST_REQUIRE_NO_THROW(mpConfigManager->GetTestMode());
   BOOST_REQUIRE(mpConfigManager != nullptr);
@@ -61,6 +71,8 @@ BOOST_AUTO_TEST_CASE(GetInstance_InvalidPath_Throws)
   auto solar_update_time = mpConfigManager->GetSolarUpdateTime();
 
   BOOST_CHECK(!testmode.is_initialized());
+  BOOST_CHECK(!senec_update_time.is_initialized());
+  BOOST_CHECK(!solar_update_time.is_initialized());
 }
 
 BOOST_AUTO_TEST_SUITE_END()

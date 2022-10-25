@@ -38,6 +38,8 @@ namespace SDA
     boost::optional<unsigned> GetSenecUpdateTime();
     boost::optional<unsigned> GetSolarUpdateTime();
     bool LoadConfig();
+    void Reset();
+    
   private:
     bool mConfigLoaded;
     std::string mFilePathAndName;
@@ -62,7 +64,6 @@ namespace SDA
   ConfigManager::GetTestMode()
   {
     EnsureConfigLoaded();
-    std::cout << mFilePathAndName << '\n';
     if (mConfigLoaded)
       return mTestMode;
     return boost::none;
@@ -126,5 +127,16 @@ namespace SDA
       return false;
     }
     return true;
+  }
+
+  void
+  ConfigManager::Reset()
+  {
+    mConfigLoaded = false;
+    mFilePathAndName = "";
+    mTestMode = DEFAULT_TESTMODE;
+    mSenecUpdateTime = DEFAULT_SENEC_UPDATE_TIME;
+    mSolarUpdateTime = DEFAULT_SOLAR_UPDATE_TIME;
+    mpConfigManager = nullptr;
   }
 }

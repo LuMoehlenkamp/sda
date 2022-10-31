@@ -17,6 +17,7 @@ int main(int argc, char *argv[])
   auto testmode_opt = p_config_manager->GetTestMode();
   auto senec_update_time_opt = p_config_manager->GetSenecUpdateTime();
   auto solar_update_time_opt = p_config_manager->GetSolarUpdateTime();
+  auto power_control_cycle_time_opt = p_config_manager->GetPowerControlCycleTime();
   
   bool testmode = true;
   if (testmode_opt)
@@ -38,7 +39,9 @@ int main(int argc, char *argv[])
   SDA::SenecDataAcquisition senec_da(ioContext, senec_update_time_opt.get());
   SDA::SolarDataAcquisition solar_da(ioContext, solar_update_time_opt.get());
   auto& senec_rs = senec_da.GetResultSubject();
-  SDA::PowerControl power_control(ioContext, 3, senec_rs);
+  SDA::PowerControl power_control(ioContext, 
+                                  power_control_cycle_time_opt.get(),
+                                  senec_rs);
 
   SDA::SenecResultObserver observer(senec_rs);
 

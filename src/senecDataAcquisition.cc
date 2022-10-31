@@ -1,7 +1,6 @@
 #include "senecDataAcquisition.hh"
 #include "senecResultDto.hh"
 #include "conversion.hh"
-#include "converter.hh"
 
 #include <fstream>
 #include <chrono>

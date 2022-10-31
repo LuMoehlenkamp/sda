@@ -27,7 +27,7 @@ public:
     mObserverList.remove(observer);
   }
 
-  void Notify(const senecResultDto& arResultDto) override
+  void Notify(const SenecResultDto& arResultDto) override
   {
     for (auto it : mObserverList)
     {

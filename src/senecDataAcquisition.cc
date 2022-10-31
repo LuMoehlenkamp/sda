@@ -195,7 +195,7 @@ SenecDataAcquisition::ProcessResponse()
   std::string filename = "test.json";
   std::fstream f_stream(filename, f_stream.binary | f_stream.trunc | f_stream.in | f_stream.out);
   boost::property_tree::write_json(f_stream, mTree);
-  senecResultDto resultDto;
+  SenecResultDto resultDto;
 
   auto time_of_measurement = std::chrono::system_clock::now();
   time_t tt;

@@ -43,7 +43,7 @@ namespace SDA
   class SenecDataAcquisition
   {
   public:
-    SenecDataAcquisition(boost::asio::io_context& ioContext, unsigned int TimerDuration);
+    SenecDataAcquisition(boost::asio::io_context& ioContext, unsigned TimerDuration);
     void Aquire();
     void ResolveHandler(const boost::system::error_code& ec,
                         const boost::asio::ip::tcp::resolver::results_type& endpoints);
@@ -64,7 +64,7 @@ namespace SDA
     boost::asio::ip::tcp::resolver mResolver;
     boost::asio::ip::tcp::socket mTcpSocket;
     ptree mTree;
-    unsigned int mTimerDuration;
+    unsigned mTimerDuration;
     boost::asio::steady_timer mTimer;
     boost::asio::streambuf mRequest;
     boost::asio::streambuf mResponse;

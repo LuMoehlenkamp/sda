@@ -8,7 +8,7 @@ namespace SDA
   {
   public:
     virtual ~ISenecResultObserver(){};
-    virtual void Update(const senecResultDto& arDataFromSubject) = 0;
+    virtual void Update(const SenecResultDto& arDataFromSubject) = 0;
   };
 
 }

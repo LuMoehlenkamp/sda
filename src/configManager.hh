@@ -12,20 +12,22 @@
 
 namespace SDA
 {
-  const bool DEFAULT_TESTMODE = true;
-  const unsigned DEFAULT_SENEC_UPDATE_TIME = 10U;
-  const unsigned DEFAULT_SOLAR_UPDATE_TIME = 15U;
 
   class ConfigManager
   {
+  private:
+    const bool DEFAULT_TESTMODE = true;
+    const unsigned DEFAULT_SENEC_UPDATE_TIME = 10U;
+    const unsigned DEFAULT_SOLAR_UPDATE_TIME = 15U;
+    const unsigned DEFAULT_POWER_CONTROL_CYCLE_TIME = 7U;
+
+    const std::string TEST_MODE_NAME = "testMode";
+    const std::string SENEC_UPDATE_TIME_NAME = "senecUpdateTime_sec";
+    const std::string SOLAR_UPDATE_TIME_NAME = "solarUpdateTime_sec";
+    const std::string POWER_CONTROL_CYCLE_NAME = "powerControlCycle_sec";
+
   protected:
-    ConfigManager(const std::string& arFilePathAndName)
-      : mConfigLoaded(false)
-      , mFilePathAndName(arFilePathAndName)
-      , mTestMode(DEFAULT_TESTMODE)
-      , mSenecUpdateTime(DEFAULT_SENEC_UPDATE_TIME)
-      , mSolarUpdateTime(DEFAULT_SOLAR_UPDATE_TIME)
-    {}
+    ConfigManager(const std::string& arFilePathAndName);
   
     static ConfigManager* mpConfigManager;
 
@@ -37,6 +39,7 @@ namespace SDA
     boost::optional<bool> GetTestMode();
     boost::optional<unsigned> GetSenecUpdateTime();
     boost::optional<unsigned> GetSolarUpdateTime();
+    boost::optional<unsigned> GetPowerControlCycleTime();
     bool LoadConfig();
     void Reset();
     
@@ -46,97 +49,9 @@ namespace SDA
     bool mTestMode;
     unsigned mSenecUpdateTime;
     unsigned mSolarUpdateTime;
+    unsigned mPowerControlCycleTime;
 
     void EnsureConfigLoaded();
   };
 
-  ConfigManager* ConfigManager::mpConfigManager = nullptr;
-
-  ConfigManager*
-  ConfigManager::GetInstance(const std::string arFilePathAndName)
-  {
-    if (mpConfigManager == nullptr)
-      mpConfigManager = new ConfigManager(arFilePathAndName);
-    return mpConfigManager;
-  }
-
-  boost::optional<bool>
-  ConfigManager::GetTestMode()
-  {
-    EnsureConfigLoaded();
-    if (mConfigLoaded)
-      return mTestMode;
-    return boost::none;
-  }
-
-  boost::optional<unsigned>
-  ConfigManager::GetSenecUpdateTime()
-  {
-    EnsureConfigLoaded();
-    if (mConfigLoaded)
-      return mSenecUpdateTime;
-    return boost::none;
-  }
-
-  boost::optional<unsigned>
-  ConfigManager::GetSolarUpdateTime()
-  {
-    EnsureConfigLoaded();
-    if (mConfigLoaded)
-      return mSolarUpdateTime;
-    return boost::none;
-  }
-
-  void
-  ConfigManager::EnsureConfigLoaded()
-  {
-    if (mConfigLoaded)
-      return;
-
-    mConfigLoaded = LoadConfig();
-  }
-
-  bool
-  ConfigManager::LoadConfig()
-  {
-    try
-    {
-      boost::property_tree::ptree tree;
-      boost::property_tree::read_json(mFilePathAndName, tree);
-      mTestMode = tree.get("testMode", DEFAULT_TESTMODE);
-      mSenecUpdateTime = tree.get("senecUpdateTime_sec", DEFAULT_SENEC_UPDATE_TIME);
-      mSolarUpdateTime = tree.get("solarUpdateTime_sec", DEFAULT_SOLAR_UPDATE_TIME);
-    }
-    catch(const boost::property_tree::json_parser_error& pt_e)
-    {
-      std::cerr << pt_e.what() << '\n';
-      return false;
-    }
-    catch(const boost::property_tree::ptree_bad_path& pt_bp_e)
-    {
-      std::cerr << pt_bp_e.what() << '\n';
-      return false;
-    }
-    catch(const std::exception& e)
-    {
-      std::cerr << e.what() << '\n';
-      return false;
-    }
-    catch (...)
-    {
-      return false;
-    }
-    return true;
-  }
-
-  void
-  ConfigManager::Reset()
-  {
-    mConfigLoaded = false;
-    mFilePathAndName = "";
-    mTestMode = DEFAULT_TESTMODE;
-    mSenecUpdateTime = DEFAULT_SENEC_UPDATE_TIME;
-    mSolarUpdateTime = DEFAULT_SOLAR_UPDATE_TIME;
-    mpConfigManager = nullptr;
-  }
 }

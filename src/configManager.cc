@@ -99,6 +99,7 @@ ConfigManager::Reset()
   mTestMode = DEFAULT_TESTMODE;
   mSenecUpdateTime = DEFAULT_SENEC_UPDATE_TIME;
   mSolarUpdateTime = DEFAULT_SOLAR_UPDATE_TIME;
+  mPowerControlCycleTime = DEFAULT_POWER_CONTROL_CYCLE_TIME;
   mpConfigManager = nullptr;
 }
 

@@ -45,17 +45,20 @@ BOOST_AUTO_TEST_CASE(GetInstance_ValidConfigPath_ReturnsValidPointerAndExpectedP
 {
   std::cout << "starting config-manager-test" << '\n';
   bool expected_testmode(true);
-  unsigned expected_senec_update_time = 15;
+  unsigned expected_senec_update_time = 10;
   unsigned expected_solar_update_time = 3600;
+  unsigned expected_control_cycle_time = 3;
 
   auto testmode = mpConfigManager->GetTestMode();
   auto senec_update_time = mpConfigManager->GetSenecUpdateTime();
   auto solar_update_time = mpConfigManager->GetSolarUpdateTime();
+  auto control_cycle_time = mpConfigManager->GetPowerControlCycleTime();
 
   BOOST_REQUIRE(mpConfigManager != nullptr);
   BOOST_CHECK_EQUAL(expected_testmode, testmode.get());
   BOOST_CHECK_EQUAL(expected_senec_update_time, senec_update_time.get());
   BOOST_CHECK_EQUAL(expected_solar_update_time, solar_update_time.get());
+  BOOST_CHECK_EQUAL(expected_control_cycle_time, control_cycle_time.get());
 }
 
 BOOST_AUTO_TEST_SUITE_END()
@@ -69,10 +72,12 @@ BOOST_AUTO_TEST_CASE(GetInstance_InvalidPath_DoesNotThrow)
   auto testmode = mpConfigManager->GetTestMode();
   auto senec_update_time = mpConfigManager->GetSenecUpdateTime();
   auto solar_update_time = mpConfigManager->GetSolarUpdateTime();
+  auto control_cycle_time = mpConfigManager->GetPowerControlCycleTime();
 
   BOOST_CHECK(!testmode.is_initialized());
   BOOST_CHECK(!senec_update_time.is_initialized());
   BOOST_CHECK(!solar_update_time.is_initialized());
+  BOOST_CHECK(!control_cycle_time.is_initialized());
 }
 
 BOOST_AUTO_TEST_SUITE_END()

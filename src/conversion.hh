@@ -1,5 +1,7 @@
 #pragma once
 
+#include "dataAcquisitionDefines.hh"
+
 #include <iostream>
 #include <sstream>
 #include <stdlib.h>

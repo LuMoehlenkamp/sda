@@ -1,5 +1,7 @@
 #pragma once
 
+#include "dataAcquisitionDefines.hh"
+
 #include <array>
 #include <iostream>
 #include <istream>
@@ -10,7 +12,6 @@
 #include <boost/asio.hpp>
 #include <boost/optional.hpp>
 #include <boost/property_tree/ptree.hpp>
-#include <boost/variant.hpp>
 
 #include "dataAcquisitionDefines.hh"
 #include "senecResultSubject.hh"
@@ -33,11 +34,6 @@ const std::string POST_REQUEST =
 
 const std::string P_TOTAL_PCC = "PM1OBJ1.P_TOTAL";
 const std::string P_TOTAL_PV = "PM1OBJ2.P_TOTAL";
-
-typedef boost::variant<uint, float> ConversionResult;
-typedef boost::optional<ConversionResult> ConversionResultOpt;
-
-typedef boost::optional<float> float_opt;
 
 class SenecDataAcquisition {
 public:

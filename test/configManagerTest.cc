@@ -1,48 +1,38 @@
-#include <boost/test/unit_test.hpp>
-#include <boost/property_tree/exceptions.hpp>
 #include "../src/configManager.hh"
+#include <boost/property_tree/exceptions.hpp>
+#include <boost/test/unit_test.hpp>
 #include <iostream>
 
-namespace SDA { namespace TEST {
+namespace SDA {
+namespace TEST {
 
-const char* VALID_CONFIG_PATH = "../../src/params.json";
-const char* INVALID_CONFIG_PATH = "../../src/param.json";
+const char *VALID_CONFIG_PATH = "../../src/params.json";
+const char *INVALID_CONFIG_PATH = "../../src/param.json";
 
-struct ConfigManagerTestValidFixture
-{
-  ConfigManagerTestValidFixture()
-  {
+struct ConfigManagerTestValidFixture {
+  ConfigManagerTestValidFixture() {
     mpConfigManager = SDA::ConfigManager::GetInstance(VALID_CONFIG_PATH);
   }
 
-  ~ConfigManagerTestValidFixture()
-  {
-    mpConfigManager->Reset();
-  }
+  ~ConfigManagerTestValidFixture() { mpConfigManager->Reset(); }
 
-  SDA::ConfigManager* mpConfigManager;
+  SDA::ConfigManager *mpConfigManager;
 };
 
-struct ConfigManagerTestInvalidFixture
-{
-  ConfigManagerTestInvalidFixture()
-  {
+struct ConfigManagerTestInvalidFixture {
+  ConfigManagerTestInvalidFixture() {
     mpConfigManager = SDA::ConfigManager::GetInstance(INVALID_CONFIG_PATH);
   }
 
-  ~ConfigManagerTestInvalidFixture()
-  {
-    mpConfigManager->Reset();
-  }
+  ~ConfigManagerTestInvalidFixture() { mpConfigManager->Reset(); }
 
-  SDA::ConfigManager* mpConfigManager;
+  SDA::ConfigManager *mpConfigManager;
 };
 
 BOOST_FIXTURE_TEST_SUITE(ConfigManagerTest_Valid, ConfigManagerTestValidFixture)
 
-
-BOOST_AUTO_TEST_CASE(GetInstance_ValidConfigPath_ReturnsValidPointerAndExpectedParameters)
-{
+BOOST_AUTO_TEST_CASE(
+    GetInstance_ValidConfigPath_ReturnsValidPointerAndExpectedParameters) {
   std::cout << "starting config-manager-test" << '\n';
   bool expected_testmode(true);
   unsigned expected_senec_update_time = 10;
@@ -63,10 +53,10 @@ BOOST_AUTO_TEST_CASE(GetInstance_ValidConfigPath_ReturnsValidPointerAndExpectedP
 
 BOOST_AUTO_TEST_SUITE_END()
 
-BOOST_FIXTURE_TEST_SUITE(ConfigManagerTest_Invalid, ConfigManagerTestInvalidFixture)
+BOOST_FIXTURE_TEST_SUITE(ConfigManagerTest_Invalid,
+                         ConfigManagerTestInvalidFixture)
 
-BOOST_AUTO_TEST_CASE(GetInstance_InvalidPath_DoesNotThrow)
-{
+BOOST_AUTO_TEST_CASE(GetInstance_InvalidPath_DoesNotThrow) {
   BOOST_REQUIRE_NO_THROW(mpConfigManager->GetTestMode());
   BOOST_REQUIRE(mpConfigManager != nullptr);
   auto testmode = mpConfigManager->GetTestMode();
@@ -82,4 +72,5 @@ BOOST_AUTO_TEST_CASE(GetInstance_InvalidPath_DoesNotThrow)
 
 BOOST_AUTO_TEST_SUITE_END()
 
-}}
+} // namespace TEST
+} // namespace SDA

@@ -5,21 +5,21 @@
 
 namespace SDA {
 
-  class SenecResultObserver : public ISenecResultObserver {
-   public:
-    SenecResultObserver(SenecResultSubject &subject);
-    virtual ~SenecResultObserver();
+class SenecResultObserver : public ISenecResultObserver {
+public:
+  SenecResultObserver(SenecResultSubject &subject);
+  virtual ~SenecResultObserver();
 
-    void Update(const SenecResultDto& arDataFromSubject) override;
-    void RemoveMeFromTheList();
-    void PrintInfo(const SenecResultDto& arDataFromSubject);
-    const SenecResultDto& GetLatestMeasurement() const;
+  void Update(const SenecResultDto &arDataFromSubject) override;
+  void RemoveMeFromTheList();
+  void PrintInfo(const SenecResultDto &arDataFromSubject);
+  const SenecResultDto &GetLatestMeasurement() const;
 
-   private:
-    SenecResultSubject& mrSubject;
-    static int mStaticNumber;
-    int mNumber;
-    SenecResultDto mSenecResultDto;
-  };
+private:
+  SenecResultSubject &mrSubject;
+  static int mStaticNumber;
+  int mNumber;
+  SenecResultDto mSenecResultDto;
+};
 
-}
+} // namespace SDA

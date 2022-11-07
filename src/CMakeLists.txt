@@ -1,7 +1,8 @@
 find_package(Boost REQUIRED COMPONENTS
-                              filesystem 
-                              regex 
-                              serialization 
+                              filesystem
+                              log
+                              regex
+                              serialization
                               system
                               thread
             )

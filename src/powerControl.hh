@@ -1,14 +1,14 @@
 #pragma once
 
+#include <chrono>
+#include <iostream>
+
 #include "senecResultObserver.hh"
 #include "senecResultSubject.hh"
-#include "senecResultDto.hh"
 
 #include <boost/asio.hpp>
 #include <boost/bind/bind.hpp>
 #include <boost/optional.hpp>
-#include <iostream>
-#include <chrono>
 
 
 namespace SDA

@@ -4,44 +4,39 @@
 #include <list>
 #include <string>
 
-#include "ISenecResultSubject.hh"
 #include "ISenecResultObserver.hh"
+#include "ISenecResultSubject.hh"
 
 namespace SDA {
 
-class SenecResultSubject : public ISenecResultSubject
-{
+class SenecResultSubject : public ISenecResultSubject {
 public:
-  virtual ~SenecResultSubject()
-  {
-    // std::cout << "Goodbye, I was the Subject.\n"; // ToDo: Replace with Logging
+  virtual ~SenecResultSubject() {
+    // std::cout << "Goodbye, I was the Subject.\n"; // ToDo: Replace with
+    // Logging
   }
 
-  void Attach(ISenecResultObserver *observer) override
-  {
+  void Attach(ISenecResultObserver *observer) override {
     mObserverList.push_back(observer);
   }
 
-  void Detach(ISenecResultObserver *observer) override
-  {
+  void Detach(ISenecResultObserver *observer) override {
     mObserverList.remove(observer);
   }
 
-  void Notify(const SenecResultDto& arResultDto) override
-  {
-    for (auto it : mObserverList)
-    {
+  void Notify(const SenecResultDto &arResultDto) override {
+    for (auto it : mObserverList) {
       it->Update(arResultDto);
     }
   }
 
-  void HowManyObserver()
-  {
-    // std::cout << "There are " << mObserverList.size() << " observers in the list.\n"; 
+  void HowManyObserver() {
+    // std::cout << "There are " << mObserverList.size() << " observers in the
+    // list.\n";
   }
 
- private:
+private:
   std::list<ISenecResultObserver *> mObserverList;
 };
 
-}
+} // namespace SDA

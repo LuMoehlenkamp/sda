@@ -1,13 +1,29 @@
 @startuml SDA Klassendiagramm
 
 class SenecDataAcquisition
-Interface ISenecResultPublisher
-class SenecResultPublisher
-struct SenecResult
+Interface ISenecResultSubject
+class SenecResultSubject
+struct SenecResultDto
+class ConfigManager
+class Conversion
+class PowerControl
+Interface ISenecResultObserver
+class SenecResultObserver
+class SolarDataAcquisition
+struct SolarResultDto
 
-SenecResultPublisher ..|> ISenecResultPublisher
-SenecDataAcquisition  *-- SenecResultPublisher
-SenecResultPublisher - SenecResult : uses
-SenecDataAcquisition - SenecResult : uses
+SenecResultSubject ..|> ISenecResultSubject
+SenecDataAcquisition  *-- SenecResultSubject
+
+SenecResultObserver ..|> ISenecResultObserver
+PowerControl *-- SenecResultObserver
+
+SenecResultSubject - SenecResultDto : uses
+SenecDataAcquisition - SenecResultDto : uses
+SenecResultObserver - SenecResultDto : uses
+SenecResultSubject -> SenecResultObserver : updates
+SenecResultObserver -> SenecResultSubject : subscribes to
+
+SolarDataAcquisition - SolarResultDto : uses
 
 @enduml

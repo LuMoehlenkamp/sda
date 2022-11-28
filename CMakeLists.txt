@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 3.15.0 FATAL_ERROR)
+set(CMAKE_SYSTEM_NAME Linux)
 set(PROJECT_NAME_STR sda)
 project(${PROJECT_NAME_STR} VERSION 0.1.0 LANGUAGES CXX)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/bin")
@@ -16,4 +17,4 @@ include_directories(${Boost_INCLUDE_DIRS})
 
 # packing
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
-include(packing)
+# include(packing)

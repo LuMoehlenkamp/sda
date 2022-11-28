@@ -10,5 +10,4 @@ namespace SDA
     virtual ~ISenecResultObserver(){};
     virtual void Update(const SenecResultDto& arDataFromSubject) = 0;
   };
-
 }

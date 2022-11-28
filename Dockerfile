@@ -12,6 +12,10 @@ RUN apt update && \
 
 RUN git clone https://github.com/LuMoehlenkamp/sda.git
 
+WORKDIR /src/sda
+
+RUN git fetch --all --prune && git pull --rebase
+
 WORKDIR /src/sda/build
 
 RUN cmake ..

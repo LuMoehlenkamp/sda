@@ -16,5 +16,5 @@ add_subdirectory(test)
 include_directories(${Boost_INCLUDE_DIRS})
 
 # packing
-set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+# set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 # include(packing)

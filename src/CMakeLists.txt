@@ -17,7 +17,9 @@ senecResultObserver.cc
 solarDataAcquisition.cc)
 # set_target_properties(${PROJECT_NAME_STR} PROPERTIES COMPILE_OPTIONS "-m32" LINK_FLAGS "-m32")
 
-find_library(WIRINGPI_LIBRARIES NAMES wiringPi PATHS /usr/local/include/wiringPi.h)
+# find_library(WIRINGPI_LIBRARIES NAMES wiringPi PATHS /usr/local/include/wiringPi.h)
+find_library(GPIOD_LIB NAMES gpiod)
 target_link_libraries(${PROJECT_NAME_STR}
                       ${Boost_LIBRARIES}
-                      ${WIRINGPI_LIBRARIES})
+                      # ${WIRINGPI_LIBRARIES}
+                      ${GPIOD_LIB})

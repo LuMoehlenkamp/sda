@@ -40,8 +40,8 @@ void InitLogger() {
 
 int main(int argc, char *argv[]) {
   InitLogger();
-  auto chip = gpiod_chip_open_by_name("gpiochip0");
-  auto lineRed = gpiod_chip_get_line(chip, 24);
+  //  auto chip = gpiod_chip_open_by_name("gpiochip0");
+  //  auto lineRed = gpiod_chip_get_line(chip, 24);
 
   auto &logger = my_logger::get();
   // BOOST_LOG(logger) << "Greetings from the global logger!";

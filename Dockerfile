@@ -16,10 +16,13 @@ RUN git clone https://github.com/LuMoehlenkamp/sda.git
 WORKDIR /src/sda
 
 RUN git fetch --all --prune && git pull --rebase
+RUN cp /src/sda/src/params.json /src/sda/bin/
 
 WORKDIR /src/sda/build
 
 RUN cmake ..
+RUN cmake --build . --config Release --target sda -j 10
+
 
 # apt install -y snapd
 # snap install cmake

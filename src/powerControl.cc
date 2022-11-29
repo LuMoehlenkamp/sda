@@ -18,5 +18,5 @@ void PowerControl::Control() {
   mTimer.expires_after(boost::asio::chrono::seconds(mTimerDuration));
   mTimer.async_wait(boost::bind(&PowerControl::Control, this));
   auto &dto = mSenecResultObserver.GetLatestMeasurement();
-  std::cout << dto.mChargingLevel << '\n';
+  std::cout << "charging level: " << dto.mChargingLevel << '\n';
 }

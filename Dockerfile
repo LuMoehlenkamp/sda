@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-FROM ubuntu:22.04
+FROM debian:bullseye-slim
 LABEL author=lmoehlenkamp
 LABEL version=0.1
 WORKDIR /src
@@ -8,7 +8,6 @@ RUN apt update && \
   apt install -y build-essential && \
   apt install -y cmake && \
   apt install -y libboost-all-dev && \
-  apt install -y wiringpi && \
   apt install -y gpiod && \
   apt install -y libgpiod-dev
 

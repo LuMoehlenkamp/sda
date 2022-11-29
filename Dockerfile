@@ -12,15 +12,15 @@ RUN apt update && \
   apt install -y gpiod && \
   apt install -y libgpiod-dev
 
-# RUN git clone https://github.com/LuMoehlenkamp/sda.git
+RUN git clone https://github.com/LuMoehlenkamp/sda.git
 
-# WORKDIR /src/sda
+WORKDIR /src/sda
 
-# RUN git fetch --all --prune && git pull --rebase
+RUN git fetch --all --prune && git pull --rebase
 
-# WORKDIR /src/sda/build
+WORKDIR /src/sda/build
 
-# RUN cmake ..
+RUN cmake ..
 
 # apt install -y snapd
 # snap install cmake

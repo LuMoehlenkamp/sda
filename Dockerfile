@@ -21,7 +21,7 @@ RUN cp /src/sda/src/params.json /src/sda/bin/
 WORKDIR /src/sda/build
 
 RUN cmake ..
-RUN cmake --build . --config Release --target sda -j 10
+RUN cmake --build . --config Release --target sda -- -j 1
 
 
 # apt install -y snapd

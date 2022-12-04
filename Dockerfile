@@ -1,6 +1,5 @@
 # syntax=docker/dockerfile:1
-# FROM debian:bullseye-slim
-FROM zinen2/alpine-pigpiod
+FROM debian:bullseye-slim
 LABEL author=lmoehlenkamp
 LABEL version=0.1
 WORKDIR /src

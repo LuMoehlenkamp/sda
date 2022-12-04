@@ -13,7 +13,7 @@
 #include "senecResultObserver.hh"
 #include "solarDataAcquisition.hh"
 #include <gpiod.h>
-// #include <wiringPi.h>
+#include <wiringPi.h>
 
 enum severity_level { normal, notification, warning, error, critical };
 

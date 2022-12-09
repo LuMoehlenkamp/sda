@@ -65,7 +65,7 @@ int main(int argc, char *argv[]) {
     }
     pinMode(18, PWM_OUTPUT);
     pwmSetMode(PWM_MODE_MS);
-    pwmSetClock(1920);
+    pwmSetClock(3840);
     pwmSetRange(1000);
     pwmWrite(18, 1000);
   }

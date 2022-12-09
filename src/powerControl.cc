@@ -20,6 +20,7 @@ void PowerControl::Control() {
   mTimer.async_wait(boost::bind(&PowerControl::Control, this));
   auto &dto = mSenecResultObserver.GetLatestMeasurement();
   std::cout << "charging level: " << dto.mChargingLevel << '\n';
+  std::cout << "duty cycle: " << testval / 10 << '\n';
 
   pwmWrite(18, testval);
   if (testval < 1000)

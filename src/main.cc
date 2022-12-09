@@ -6,13 +6,11 @@
 #include <boost/log/utility/setup/file.hpp>
 #include <boost/move/utility_core.hpp>
 
-// #include <pigpiod_if2.h>
 #include "configManager.hh"
 #include "powerControl.hh"
 #include "senecDataAcquisition.hh"
 #include "senecResultObserver.hh"
 #include "solarDataAcquisition.hh"
-#include <gpiod.h>
 #include <wiringPi.h>
 
 enum severity_level { normal, notification, warning, error, critical };
@@ -40,8 +38,6 @@ void InitLogger() {
 
 int main(int argc, char *argv[]) {
   InitLogger();
-  auto chip = gpiod_chip_open_by_name("gpiochip0");
-  auto lineRed = gpiod_chip_get_line(chip, 24);
 
   auto &logger = my_logger::get();
   // BOOST_LOG(logger) << "Greetings from the global logger!";
@@ -63,10 +59,15 @@ int main(int argc, char *argv[]) {
     testmode = testmode_opt.get();
 
   if (!testmode) {
-    // if (wiringPiSetup() == -1) {
-    //   std::cout << "wiringpi init unsuccessful... goodbye!" << '\n';
-    //   exit(1);
-    // }
+    if (wiringPiSetupGpio() == -1) {
+      std::cout << "wiringpi init unsuccessful... goodbye!" << '\n';
+      exit(1);
+    }
+    pinMode(18, PWM_OUTPUT);
+    pwmSetMode(PWM_MODE_MS);
+    pwmSetClock(1920);
+    pwmSetRange(1000);
+    pwmWrite(18, 1000);
   }
 
   boost::asio::io_context ioContext;

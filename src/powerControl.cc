@@ -1,4 +1,5 @@
 #include "powerControl.hh"
+#include "wiringPi.h"
 
 using namespace SDA;
 
@@ -19,4 +20,10 @@ void PowerControl::Control() {
   mTimer.async_wait(boost::bind(&PowerControl::Control, this));
   auto &dto = mSenecResultObserver.GetLatestMeasurement();
   std::cout << "charging level: " << dto.mChargingLevel << '\n';
+
+  pwmWrite(18, testval);
+  if (testval < 1000)
+    testval += 100;
+  else
+    testval = 0;
 }

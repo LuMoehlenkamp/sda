@@ -3,6 +3,7 @@
 #include <chrono>
 #include <iostream>
 
+#include "global.hh"
 #include "senecResultObserver.hh"
 #include "senecResultSubject.hh"
 
@@ -23,5 +24,6 @@ private:
   boost::asio::steady_timer mTimer;
   SenecResultSubject &mrResultSubject;
   SenecResultObserver mSenecResultObserver;
+  my_logger::logger_type &mrLogger;
 };
 } // namespace SDA

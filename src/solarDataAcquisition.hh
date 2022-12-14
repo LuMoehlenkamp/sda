@@ -13,6 +13,7 @@
 #include <boost/property_tree/xml_parser.hpp>
 
 #include "dataAcquisitionDefines.hh"
+#include "global.hh"
 
 namespace SDA {
 const std::string SOLAR_PATH = "/html/269.htm";
@@ -48,6 +49,7 @@ private:
   boost::asio::steady_timer mTimer;
   boost::asio::streambuf mRequest;
   boost::asio::streambuf mResponse;
+  my_logger::logger_type &mrLogger;
 };
 
 } // namespace SDA

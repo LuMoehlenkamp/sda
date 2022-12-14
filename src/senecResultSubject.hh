@@ -11,10 +11,7 @@ namespace SDA {
 
 class SenecResultSubject : public ISenecResultSubject {
 public:
-  virtual ~SenecResultSubject() {
-    // std::cout << "Goodbye, I was the Subject.\n"; // ToDo: Replace with
-    // Logging
-  }
+  virtual ~SenecResultSubject() {}
 
   void Attach(ISenecResultObserver *observer) override {
     mObserverList.push_back(observer);
@@ -30,10 +27,7 @@ public:
     }
   }
 
-  void HowManyObserver() {
-    // std::cout << "There are " << mObserverList.size() << " observers in the
-    // list.\n";
-  }
+  void HowManyObserver() {}
 
 private:
   std::list<ISenecResultObserver *> mObserverList;

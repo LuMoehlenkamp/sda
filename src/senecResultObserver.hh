@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ISenecResultObserver.hh"
+#include "global.hh"
 #include "senecResultSubject.hh"
 
 namespace SDA {
@@ -20,6 +21,7 @@ private:
   static int mStaticNumber;
   int mNumber;
   SenecResultDto mSenecResultDto;
+  my_logger::logger_type &mrLogger;
 };
 
 } // namespace SDA

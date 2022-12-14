@@ -10,19 +10,20 @@ PowerControl::PowerControl(boost::asio::io_context &ioContext,
       mTimer(ioContext, boost::asio::chrono::seconds(1)),
       mrResultSubject(arResultSubject) // ToDo: Maybe not required
       ,
-      mSenecResultObserver(arResultSubject) {
+      mSenecResultObserver(arResultSubject), mrLogger(my_logger::get()) {
   mTimer.async_wait(boost::bind(&PowerControl::Control, this));
 }
 
 void PowerControl::Control() {
-  std::cout << "I'm controlling... \n";
   mTimer.expires_after(boost::asio::chrono::seconds(mTimerDuration));
   mTimer.async_wait(boost::bind(&PowerControl::Control, this));
   auto &dto = mSenecResultObserver.GetLatestMeasurement();
-  std::cout << "charging level: " << dto.mChargingLevel << '\n';
-  std::cout << "duty cycle: " << testval / 10 << '\n';
 
-  pwmWrite(18, testval);
+  BOOST_LOG_SEV(mrLogger, normal)
+      << "control cycle - charging level: " << dto.mChargingLevel
+      << " - duty cycle: " << testval / 10;
+
+  // pwmWrite(18, testval);
   if (testval < 1000)
     testval += 100;
   else

@@ -14,7 +14,8 @@ SolarDataAcquisition::SolarDataAcquisition(io_context &ioContext,
                                            unsigned int TimerDuration)
     : mrIoContext(ioContext), mResolver(mrIoContext), mTcpSocket(mrIoContext),
       mTimerDuration(TimerDuration),
-      mTimer(ioContext, chrono::seconds(INITIAL_TIMER_DURATION)) {
+      mTimer(ioContext, std::chrono::seconds(INITIAL_TIMER_DURATION)),
+      mrLogger(my_logger::get()) {
   mTimer.async_wait(bind(&SolarDataAcquisition::Aquire, this));
 }
 
@@ -24,7 +25,7 @@ void SolarDataAcquisition::Aquire() {
     mResolver.async_resolve(Query, bind(&SolarDataAcquisition::ResolveHandler,
                                         this, boost::asio::placeholders::error,
                                         boost::asio::placeholders::results));
-    mTimer.expires_after(chrono::seconds(mTimerDuration));
+    mTimer.expires_after(std::chrono::seconds(mTimerDuration));
     mTimer.async_wait(boost::bind(&SolarDataAcquisition::Aquire, this));
   } catch (boost::system::system_error &e) {
     std::cerr << e.what() << '\n';
@@ -34,12 +35,14 @@ void SolarDataAcquisition::Aquire() {
 void SolarDataAcquisition::ResolveHandler(
     const boost::system::error_code &ec,
     const ip::tcp::resolver::results_type &endpoints) {
-  if (!ec) {
+  if (ec) {
+    BOOST_LOG_SEV(mrLogger, severity_level::error)
+        << "SolarDataAcquisition::ResolveHandler: Resolve failed with message: "
+        << ec.message();
+  } else {
     async_connect(mTcpSocket, endpoints,
                   bind(&SolarDataAcquisition::ConnectHandler, this,
                        boost::asio::placeholders::error));
-  } else {
-    std::cout << "Resolve failed with message: " << ec.message() << '\n';
   }
 }
 
@@ -53,7 +56,9 @@ void SolarDataAcquisition::ConnectHandler(const system::error_code &ec) {
                 bind(&SolarDataAcquisition::WriteRequestHandler, this,
                      boost::asio::placeholders::error));
   } else {
-    std::cout << "Connect failed with message: " << ec.message() << '\n';
+    BOOST_LOG_SEV(mrLogger, severity_level::error)
+        << "SolarDataAcquisition::ConnectHandler: Connect failed with message: "
+        << ec.message();
   }
 }
 
@@ -64,7 +69,9 @@ void SolarDataAcquisition::WriteRequestHandler(
                      bind(&SolarDataAcquisition::ReadStatusHandler, this,
                           boost::asio::placeholders::error));
   } else {
-    std::cout << "Error: " << ec.message() << '\n';
+    BOOST_LOG_SEV(mrLogger, severity_level::error)
+        << "SolarDataAcquisition::WriteRequestHandler failed with message: "
+        << ec.message();
   }
 }
 
@@ -79,19 +86,23 @@ void SolarDataAcquisition::ReadStatusHandler(
     std::string status_message;
     std::getline(response_stream, status_message);
     if (!response_stream || http_version.substr(0, 5) != "HTTP/") {
-      std::cout << "Invalid response\n";
+      BOOST_LOG_SEV(mrLogger, severity_level::error)
+          << "SolarDataAcquisition::ReadStatusHandler: Invalid response";
       return;
     }
     if (status_code != HTTP_OK_STATUS) {
-      std::cout << "Response returned with status code: " << status_code
-                << "\n";
+      BOOST_LOG_SEV(mrLogger, severity_level::error)
+          << "SolarDataAcquisition::ReadStatusHandler: Response returned with "
+             "status code: "
+          << status_code;
       return;
     }
     async_read_until(mTcpSocket, mResponse, "\r\n\r\n",
                      bind(&SolarDataAcquisition::ReadHeaderHandler, this,
                           boost::asio::placeholders::error));
   } else {
-    std::cout << "Error: " << ec.message() << "\n";
+    BOOST_LOG_SEV(mrLogger, severity_level::error)
+        << "SolarDataAcquisition::ReadStatusHandler: Error: " << ec.message();
   }
 }
 
@@ -107,7 +118,8 @@ void SolarDataAcquisition::ReadHeaderHandler(
                bind(&SolarDataAcquisition::ReadContentHandler, this,
                     boost::asio::placeholders::error));
   } else {
-    std::cout << "Error: " << ec.message() << '\n';
+    BOOST_LOG_SEV(mrLogger, severity_level::error)
+        << "SolarDataAcquisition::ReadHeaderHandler: Error: " << ec.message();
   }
 }
 
@@ -118,7 +130,8 @@ void SolarDataAcquisition::ReadContentHandler(
                bind(&SolarDataAcquisition::ReadContentHandler, this,
                     boost::asio::placeholders::error));
   } else if (ec != boost::asio::error::eof) {
-    std::cout << "Content Error: " << ec.message() << '\n';
+    BOOST_LOG_SEV(mrLogger, severity_level::error)
+        << "SolarDataAcquisition::ReadContentHandler: Error: " << ec.message();
   } else {
     ProcessResponse();
   }

@@ -14,7 +14,8 @@ configManager.cc
 powerControl.cc
 senecDataAcquisition.cc
 senecResultObserver.cc
-solarDataAcquisition.cc)
+solarDataAcquisition.cc
+global.cc)
 # set_target_properties(${PROJECT_NAME_STR} PROPERTIES COMPILE_OPTIONS "-m32" LINK_FLAGS "-m32")
 
 find_library(WIRINGPI_LIBRARIES NAMES wiringPi PATHS /usr/local/include/wiringPi.h)

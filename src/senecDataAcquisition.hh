@@ -14,6 +14,7 @@
 #include <boost/property_tree/ptree.hpp>
 
 #include "dataAcquisitionDefines.hh"
+#include "global.hh"
 #include "senecResultSubject.hh"
 
 namespace SDA {
@@ -45,7 +46,7 @@ public:
                  const boost::asio::ip::tcp::resolver::results_type &endpoints);
   void ConnectHandler(const boost::system::error_code &ec);
   void WriteRequestHandler(const boost::system::error_code &ec);
-  void ReadStatushandler(const boost::system::error_code &ec);
+  void ReadStatusHandler(const boost::system::error_code &ec);
   void ReadHeaderHandler(const boost::system::error_code &ec);
   void ReadContentHandler(const boost::system::error_code &ec);
   void ProcessResponse();
@@ -65,6 +66,7 @@ private:
   boost::asio::streambuf mRequest;
   boost::asio::streambuf mResponse;
   SenecResultSubject mrSubject;
+  my_logger::logger_type &mrLogger;
 };
 
 } // namespace SDA

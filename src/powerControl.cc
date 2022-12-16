@@ -9,6 +9,7 @@ PowerControl::PowerControl(boost::asio::io_context &ioContext,
     : mTimerDuration(TimerDuration), mTestmode(Testmode),
       mTimer(ioContext, boost::asio::chrono::seconds(1)),
       mSenecResultObserver(arResultSubject), mrLogger(my_logger::get()) {
+  InitOutput();
   mTimer.async_wait(boost::bind(&PowerControl::Control, this));
 }
 
@@ -38,7 +39,7 @@ void PowerControl::Control() {
       << "control cycle - charging level: " << dto.mChargingLevel
       << " - duty cycle: " << testval / 10;
 
-  // pwmWrite(18, testval);
+  pwmWrite(18, testval);
   if (testval < 1000)
     testval += 100;
   else

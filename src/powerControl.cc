@@ -4,14 +4,29 @@
 using namespace SDA;
 
 PowerControl::PowerControl(boost::asio::io_context &ioContext,
-                           unsigned TimerDuration,
+                           unsigned TimerDuration, bool Testmode,
                            SenecResultSubject &arResultSubject)
-    : mTimerDuration(TimerDuration),
+    : mTimerDuration(TimerDuration), mTestmode(Testmode),
       mTimer(ioContext, boost::asio::chrono::seconds(1)),
-      mrResultSubject(arResultSubject) // ToDo: Maybe not required
-      ,
       mSenecResultObserver(arResultSubject), mrLogger(my_logger::get()) {
   mTimer.async_wait(boost::bind(&PowerControl::Control, this));
+}
+
+bool PowerControl::InitOutput() {
+  if (!mTestmode) {
+    if (wiringPiSetupGpio() == -1) {
+      BOOST_LOG_SEV(mrLogger, normal)
+          << "wiringpi init unsuccessful... goodbye!";
+      return false;
+    }
+
+    pinMode(18, PWM_OUTPUT);
+    pwmSetMode(PWM_MODE_MS);
+    pwmSetClock(3840);
+    pwmSetRange(1000);
+    pwmWrite(18, 1000);
+  }
+  return true;
 }
 
 void PowerControl::Control() {

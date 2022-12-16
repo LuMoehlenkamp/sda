@@ -11,6 +11,7 @@
 int main(int argc, char *argv[]) {
   std::cout << "application started..." << '\n';
   std::signal(SIGINT, signal_handler);
+  std::signal(SIGTERM, signal_handler);
 
   InitLogger();
   auto &logger = my_logger::get();

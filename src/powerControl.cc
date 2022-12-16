@@ -38,8 +38,8 @@ void PowerControl::Control() {
   BOOST_LOG_SEV(mrLogger, normal)
       << "control cycle - charging level: " << dto.mChargingLevel
       << " - duty cycle: " << testval / 10;
-
-  pwmWrite(18, testval);
+  if (!mTestmode)
+    pwmWrite(18, testval);
   if (testval < 1000)
     testval += 100;
   else

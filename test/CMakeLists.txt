@@ -2,7 +2,16 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ".")
 set(PROJECT_UNIT_TESTS_NAME ${PROJECT_NAME_STR}_unit_tests)
 
 # Dependencies
-find_package(Boost COMPONENTS filesystem regex serialization thread timer system unit_test_framework REQUIRED)
+find_package(Boost REQUIRED COMPONENTS
+                      filesystem
+                      log
+                      log_setup
+                      regex
+                      serialization
+                      thread
+                      timer
+                      system
+                      unit_test_framework)
 
 # Gather the header and source files
 file(GLOB UNIT_TESTS_INC_FILES ${PROJECT_SOURCE_DIR}/test/*.hh)

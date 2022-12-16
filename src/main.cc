@@ -10,6 +10,7 @@
 
 int main(int argc, char *argv[]) {
   std::cout << "application started..." << '\n';
+  std::signal(SIGINT, signal_handler);
 
   InitLogger();
   auto &logger = my_logger::get();
@@ -27,18 +28,6 @@ int main(int argc, char *argv[]) {
   if (testmode_opt)
     testmode = testmode_opt.get();
 
-  if (!testmode) {
-    if (wiringPiSetupGpio() == -1) {
-      BOOST_LOG_SEV(logger, normal) << "wiringpi init unsuccessful... goodbye!";
-      exit(1);
-    }
-    pinMode(18, PWM_OUTPUT);
-    pwmSetMode(PWM_MODE_MS);
-    pwmSetClock(3840);
-    pwmSetRange(1000);
-    pwmWrite(18, 1000);
-  }
-
   boost::asio::io_context ioContext;
   boost::asio::executor_work_guard<boost::asio::io_context::executor_type>
       work = boost::asio::make_work_guard(ioContext);
@@ -47,7 +36,7 @@ int main(int argc, char *argv[]) {
   SDA::SolarDataAcquisition solar_da(ioContext, solar_update_time_opt.get());
   auto &senec_rs = senec_da.GetResultSubject();
   SDA::PowerControl power_control(ioContext, power_control_cycle_time_opt.get(),
-                                  senec_rs);
+                                  testmode, senec_rs);
 
   ioContext.run();
 

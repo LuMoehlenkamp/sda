@@ -8,6 +8,15 @@
 #include <boost/log/utility/setup/file.hpp>
 #include <boost/move/utility_core.hpp>
 
+#include <csignal>
+#include <iostream>
+
+namespace {
+volatile std::sig_atomic_t gSignalStatus;
+}
+
+void signal_handler(int signal);
+
 enum severity_level { normal, notification, warning, error, critical };
 
 typedef boost::log::sources::severity_channel_logger_mt<severity_level,

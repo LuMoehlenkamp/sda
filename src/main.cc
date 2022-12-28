@@ -17,17 +17,15 @@ int main(int argc, char *argv[]) {
   auto &logger = my_logger::get();
   BOOST_LOG_SEV(logger, normal) << "application started";
 
-  SDA::ConfigManager *p_config_manager =
-      SDA::ConfigManager::GetInstance(SDA::CONFIG_PATH);
+  SDA::ConfigManager *p_config_manager(
+      SDA::ConfigManager::GetInstance(SDA::ConfigManager::CONFIG_PATH));
   auto testmode_opt = p_config_manager->GetTestMode();
   auto senec_update_time_opt = p_config_manager->GetSenecUpdateTime();
   auto solar_update_time_opt = p_config_manager->GetSolarUpdateTime();
   auto power_control_cycle_time_opt =
       p_config_manager->GetPowerControlCycleTime();
 
-  bool testmode = true;
-  if (testmode_opt)
-    testmode = testmode_opt.get();
+  // SDA::GpioManager *p_gpio_manager(SDA::GpioManager::GetInstance());
 
   boost::asio::io_context ioContext;
   boost::asio::executor_work_guard<boost::asio::io_context::executor_type>
@@ -37,7 +35,7 @@ int main(int argc, char *argv[]) {
   SDA::SolarDataAcquisition solar_da(ioContext, solar_update_time_opt.get());
   auto &senec_rs = senec_da.GetResultSubject();
   SDA::PowerControl power_control(ioContext, power_control_cycle_time_opt.get(),
-                                  testmode, senec_rs);
+                                  senec_rs);
 
   ioContext.run();
 

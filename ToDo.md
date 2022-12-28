@@ -1,8 +1,17 @@
-# SDA (SENEC DATA ACQUISITION)
+# SDA (SENEC DATA ACQUISITION) - current ToDos
 
 ## include logging
 
 ## include observer to make solar forecast data available
+
+## control algorithm
+
+## make data from temperature sensors available
+  - pull up seeting in /boot/config.txt
+  - read existing sensor ids
+  - check their type (group)
+  - read data from existing sensors
+  - test using: cat /sys/devices/w1_bus_master1/28-072261372670/w1_slave
 
 ## Dockerfile erstellen
   - apt search libboost-all-dev
@@ -11,9 +20,6 @@
   - hypriot/rpi-gpio
   - /usr/bin/cmake --build /home/ludger/source/sda/build --config Release --target sda -j 10
   - copy params.json
-
-## einarbeitung gpiod
-  - segmentation fault when starting
 
 ## Container starten
   - docker run --privileged -d whatever

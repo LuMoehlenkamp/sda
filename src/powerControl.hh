@@ -3,6 +3,7 @@
 #include <chrono>
 #include <iostream>
 
+#include "configManager.hh"
 #include "global.hh"
 #include "senecResultObserver.hh"
 #include "senecResultSubject.hh"
@@ -12,21 +13,26 @@
 #include <boost/optional.hpp>
 
 namespace SDA {
+
+class GpioManager;
+
 class PowerControl {
 public:
   PowerControl(boost::asio::io_context &ioContext, unsigned TimerDuration,
-               bool Testmode, SenecResultSubject &arResultSubject);
+               SenecResultSubject &arResultSubject);
 
 private:
-  bool InitOutput();
+  unsigned GetTimerDurationFromConfig();
   void Control();
 
   int testval = 0;
   unsigned mTimerDuration;
-  bool mTestmode;
   boost::asio::steady_timer mTimer;
-  // SenecResultSubject &mrResultSubject;
+  SDA::GpioManager *mpGpioManager = nullptr;
+  SDA::ConfigManager *mpConfigManager = nullptr;
   SenecResultObserver mSenecResultObserver;
   my_logger::logger_type &mrLogger;
+  bool mTestmode;
+  bool mGpioInitialised;
 };
 } // namespace SDA

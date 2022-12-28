@@ -11,6 +11,7 @@ add_definitions(-DBOOST_BIND_GLOBAL_PLACEHOLDERS)
 
 add_executable(${PROJECT_NAME_STR} main.cc
 configManager.cc
+gpioManager.cc
 powerControl.cc
 senecDataAcquisition.cc
 senecResultObserver.cc

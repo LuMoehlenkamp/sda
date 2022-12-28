@@ -11,15 +11,19 @@ Interface ISenecResultObserver
 class SenecResultObserver
 class SolarDataAcquisition
 struct SolarResultDto
+class GpioManager
 
 SenecResultSubject ..|> ISenecResultSubject
 SenecDataAcquisition  *-- SenecResultSubject
 
 SenecResultObserver ..|> ISenecResultObserver
 PowerControl *-- SenecResultObserver
+PowerControl x--> ConfigManager
+PowerControl x--> GpioManager
 
 SenecResultSubject - SenecResultDto : uses
 SenecDataAcquisition - SenecResultDto : uses
+SenecDataAcquisition - Conversion : uses
 SenecResultObserver - SenecResultDto : uses
 SenecResultSubject -> SenecResultObserver : updates
 SenecResultObserver -> SenecResultSubject : subscribes to

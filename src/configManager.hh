@@ -12,6 +12,7 @@
 #include <boost/property_tree/ptree.hpp>
 
 namespace SDA {
+
 class ConfigManager {
 private:
   const bool DEFAULT_TESTMODE = true;
@@ -30,6 +31,7 @@ protected:
   static ConfigManager *mpConfigManager;
 
 public:
+  static const std::string CONFIG_PATH;
   ConfigManager(ConfigManager &arOther) = delete;
   void operator=(const ConfigManager &arOther) = delete;
 

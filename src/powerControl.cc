@@ -1,34 +1,32 @@
 #include "powerControl.hh"
+#include "gpioManager.hh"
 #include "wiringPi.h"
 
 using namespace SDA;
 
+// clang-format off
 PowerControl::PowerControl(boost::asio::io_context &ioContext,
-                           unsigned TimerDuration, bool Testmode,
+                           unsigned TimerDuration,
                            SenecResultSubject &arResultSubject)
-    : mTimerDuration(TimerDuration), mTestmode(Testmode),
-      mTimer(ioContext, boost::asio::chrono::seconds(1)),
-      mSenecResultObserver(arResultSubject), mrLogger(my_logger::get()) {
-  InitOutput();
+    : mTimerDuration(TimerDuration)
+    , mTimer(ioContext, boost::asio::chrono::seconds(1))
+    , mpConfigManager( SDA::ConfigManager::GetInstance(SDA::ConfigManager::CONFIG_PATH))
+    , mSenecResultObserver(arResultSubject)
+    , mrLogger(my_logger::get())
+    , mTestmode(true)
+    , mGpioInitialised(false)
+{
+  mpGpioManager = GpioManager::GetInstance();
+  if(mpGpioManager != nullptr)
+  {
+    mTestmode = mpGpioManager->GetTestmodeFromConfig();
+    mGpioInitialised = mpGpioManager->InitOutput();
+  }
   mTimer.async_wait(boost::bind(&PowerControl::Control, this));
 }
+// clang-format on
 
-bool PowerControl::InitOutput() {
-  if (!mTestmode) {
-    if (wiringPiSetupGpio() == -1) {
-      BOOST_LOG_SEV(mrLogger, normal)
-          << "wiringpi init unsuccessful... goodbye!";
-      return false;
-    }
-
-    pinMode(18, PWM_OUTPUT);
-    pwmSetMode(PWM_MODE_MS);
-    pwmSetClock(3840);
-    pwmSetRange(1000);
-    pwmWrite(18, 1000);
-  }
-  return true;
-}
+unsigned PowerControl::GetTimerDurationFromConfig() { return 0; }
 
 void PowerControl::Control() {
   mTimer.expires_after(boost::asio::chrono::seconds(mTimerDuration));

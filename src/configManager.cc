@@ -2,6 +2,8 @@
 
 using namespace SDA;
 
+const std::string ConfigManager::CONFIG_PATH = "./params.json";
+
 ConfigManager *ConfigManager::mpConfigManager = nullptr;
 
 ConfigManager::ConfigManager(const std::string &arFilePathAndName)

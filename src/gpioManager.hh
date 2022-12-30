@@ -12,6 +12,7 @@ private:
   static GpioManager *GetInstance();
   bool GetTestmodeFromConfig();
   bool InitOutput();
+  static bool ResetOutput();
 
 protected:
   GpioManager();
@@ -25,7 +26,7 @@ public:
   friend class PowerControl;
 
 private:
-  bool mTestmode;
+  static bool mTestmode;
 };
 
 } // namespace SDA

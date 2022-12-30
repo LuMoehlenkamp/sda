@@ -10,8 +10,6 @@
 
 int main(int argc, char *argv[]) {
   std::cout << "application started..." << '\n';
-  std::signal(SIGINT, signal_handler);
-  std::signal(SIGTERM, signal_handler);
 
   InitLogger();
   auto &logger = my_logger::get();
@@ -25,8 +23,6 @@ int main(int argc, char *argv[]) {
   auto power_control_cycle_time_opt =
       p_config_manager->GetPowerControlCycleTime();
 
-  // SDA::GpioManager *p_gpio_manager(SDA::GpioManager::GetInstance());
-
   boost::asio::io_context ioContext;
   boost::asio::executor_work_guard<boost::asio::io_context::executor_type>
       work = boost::asio::make_work_guard(ioContext);
@@ -36,6 +32,8 @@ int main(int argc, char *argv[]) {
   auto &senec_rs = senec_da.GetResultSubject();
   SDA::PowerControl power_control(ioContext, power_control_cycle_time_opt.get(),
                                   senec_rs);
+  std::signal(SIGINT, SDA::PowerControl::SignalHandler);
+  std::signal(SIGTERM, SDA::PowerControl::SignalHandler);
 
   ioContext.run();
 

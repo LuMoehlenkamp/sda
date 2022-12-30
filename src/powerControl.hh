@@ -21,6 +21,8 @@ public:
   PowerControl(boost::asio::io_context &ioContext, unsigned TimerDuration,
                SenecResultSubject &arResultSubject);
 
+  static void SignalHandler(int signal);
+
 private:
   unsigned GetTimerDurationFromConfig();
   void Control();

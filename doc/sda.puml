@@ -4,11 +4,11 @@ class SenecDataAcquisition
 Interface ISenecResultSubject
 class SenecResultSubject
 struct SenecResultDto
+Interface ISenecResultObserver
+class SenecResultObserver
 class ConfigManager
 class Conversion
 class PowerControl
-Interface ISenecResultObserver
-class SenecResultObserver
 class SolarDataAcquisition
 struct SolarResultDto
 class GpioManager

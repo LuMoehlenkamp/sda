@@ -1,5 +1,4 @@
 #include "global.hh"
-#include <wiringPi.h>
 
 void InitLogger() {
   boost::log::add_file_log(

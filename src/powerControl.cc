@@ -4,18 +4,17 @@
 
 using namespace SDA;
 
+const unsigned PowerControl::DefaultTimerDuration = 10;
+
 // clang-format off
 PowerControl::PowerControl(boost::asio::io_context &ioContext,
-                           unsigned TimerDuration,
                            SenecResultSubject &arResultSubject)
-    : mTimerDuration(TimerDuration)
-    , mTimer(ioContext, boost::asio::chrono::seconds(1))
+    : mTimer(ioContext, boost::asio::chrono::seconds(1))
     , mpConfigManager( SDA::ConfigManager::GetInstance(SDA::ConfigManager::CONFIG_PATH))
     , mSenecResultObserver(arResultSubject)
     , mrLogger(my_logger::get())
-    , mTestmode(true)
-    , mGpioInitialised(false)
 {
+  mTimerDuration = GetTimerDurationFromConfig();
   mpGpioManager = GpioManager::GetInstance();
   if(mpGpioManager != nullptr)
   {
@@ -39,13 +38,15 @@ void PowerControl::SignalHandler(int signal) {
   exit(1);
 }
 
-unsigned PowerControl::GetTimerDurationFromConfig() { return 0; }
+unsigned PowerControl::GetTimerDurationFromConfig() {
+  auto time_opt{mpConfigManager->GetPowerControlCycleTime()};
+  return time_opt.get_value_or(DefaultTimerDuration);
+}
 
 void PowerControl::Control() {
-  mTimer.expires_after(boost::asio::chrono::seconds(mTimerDuration));
-  mTimer.async_wait(boost::bind(&PowerControl::Control, this));
-  auto &dto = mSenecResultObserver.GetLatestMeasurement();
+  SetTimer();
 
+  auto &dto = mSenecResultObserver.GetLatestMeasurement();
   BOOST_LOG_SEV(mrLogger, normal)
       << "control cycle - charging level: " << dto.mChargingLevel
       << " - duty cycle: " << testval / 10;
@@ -55,4 +56,9 @@ void PowerControl::Control() {
     testval += 100;
   else
     testval = 0;
+}
+
+void PowerControl::SetTimer() {
+  mTimer.expires_after(boost::asio::chrono::seconds(mTimerDuration));
+  mTimer.async_wait(boost::bind(&PowerControl::Control, this));
 }

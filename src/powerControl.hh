@@ -17,8 +17,11 @@ namespace SDA {
 class GpioManager;
 
 class PowerControl {
+
+  static const unsigned DefaultTimerDuration;
+
 public:
-  PowerControl(boost::asio::io_context &ioContext, unsigned TimerDuration,
+  PowerControl(boost::asio::io_context &ioContext,
                SenecResultSubject &arResultSubject);
 
   static void SignalHandler(int signal);
@@ -26,6 +29,7 @@ public:
 private:
   unsigned GetTimerDurationFromConfig();
   void Control();
+  void SetTimer();
 
   int testval = 0;
   unsigned mTimerDuration;
@@ -34,7 +38,7 @@ private:
   SDA::ConfigManager *mpConfigManager = nullptr;
   SenecResultObserver mSenecResultObserver;
   my_logger::logger_type &mrLogger;
-  bool mTestmode;
-  bool mGpioInitialised;
+  bool mTestmode = true;
+  bool mGpioInitialised = false;
 };
 } // namespace SDA

@@ -4,9 +4,9 @@
 
 struct SenecResultDto {
   std::chrono::_V2::system_clock::time_point mTimeOfMeasurement;
-  float mPowerGrid;
+  float mPowerGrid; // positive values: consumption
   float mPowerGen;
-  float mPowerHouse;
+  float mPowerHouse; // positive values: consumption
   float mPowerBat;
-  float mChargingLevel;
+  float mChargingLevel; // always positive
 };

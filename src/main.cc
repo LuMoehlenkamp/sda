@@ -17,7 +17,6 @@ int main(int argc, char *argv[]) {
 
   SDA::ConfigManager *p_config_manager(
       SDA::ConfigManager::GetInstance(SDA::ConfigManager::CONFIG_PATH));
-  auto testmode_opt = p_config_manager->GetTestMode();
   auto senec_update_time_opt = p_config_manager->GetSenecUpdateTime();
   auto solar_update_time_opt = p_config_manager->GetSolarUpdateTime();
 

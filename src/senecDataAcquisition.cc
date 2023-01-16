@@ -162,7 +162,6 @@ void SenecDataAcquisition::ProcessResponse() {
   SenecResultDto resultDto;
 
   auto time_of_measurement = std::chrono::system_clock::now();
-  std::chrono::system_clock::to_time_t(time_of_measurement);
   resultDto.mTimeOfMeasurement = time_of_measurement;
 
   ConversionResultOpt grid_power_cr = GetGridPower();

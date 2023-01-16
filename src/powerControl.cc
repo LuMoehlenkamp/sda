@@ -1,5 +1,6 @@
 #include "powerControl.hh"
 #include "gpioManager.hh"
+#include "oneWireSensorInterface.hh"
 #include "wiringPi.h"
 
 using namespace SDA;
@@ -45,6 +46,9 @@ unsigned PowerControl::GetTimerDurationFromConfig() {
 
 void PowerControl::Control() {
   SetTimer();
+  OneWireSensorInterface sensor_interface("/sys/bus/w1/devices");
+  TemperatureSensorsDto temperatures;
+  sensor_interface.GetAllTemperatures(temperatures);
 
   auto &dto = mSenecResultObserver.GetLatestMeasurement();
   BOOST_LOG_SEV(mrLogger, normal)

@@ -5,6 +5,7 @@
   - proof of concept
     - simple but deterministic setup to check power consumption
     - start application using: ssh -X 192.168.178.38 -f 'cd ~/sda/sda/bin && sudo ./sda'
+    - power grid's sign has to be inverted
 
 ## make temperature sensor data available
   - get more info regarding 1-wire interface

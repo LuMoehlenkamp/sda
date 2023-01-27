@@ -39,7 +39,7 @@ void SenecResultObserver::PrintInfo(const SenecResultDto &arDataFromSubject) {
       arDataFromSubject.mTimeOfMeasurement);
   BOOST_LOG_SEV(mrLogger, normal) << "meas time: " << ctime(&tt);
   BOOST_LOG_SEV(mrLogger, normal)
-      << "charging level: " << arDataFromSubject.mChargingLevel
+      << "charging level: " << arDataFromSubject.mChargeLevel
       << "| power bat: " << arDataFromSubject.mPowerBat
       << "| power gen: " << arDataFromSubject.mPowerGen
       << "| power grid: " << arDataFromSubject.mPowerGrid

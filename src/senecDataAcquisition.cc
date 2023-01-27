@@ -190,7 +190,7 @@ void SenecDataAcquisition::ProcessResponse() {
       mTree.get<std::string>("ENERGY.GUI_BAT_DATA_FUEL_CHARGE");
   ConversionResultOpt bat_charge_cr = Conversion::Convert(bat_charge);
   if (bat_charge_cr) {
-    resultDto.mChargingLevel = boost::get<float>(bat_charge_cr.get());
+    resultDto.mChargeLevel = boost::get<float>(bat_charge_cr.get());
   }
 
   mrSubject.Notify(resultDto);

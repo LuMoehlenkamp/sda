@@ -1,0 +1,34 @@
+@startwbs
+*[#SkyBlue] SDA
+**[#SkyBlue] ConfigManager
+***[#SkyBlue] temperature sensor ids
+***[#SkyBlue] min temperatures
+***[#SkyBlue] max temperatures
+**[#SkyBlue] GpioManager
+**[#Green] Logger
+**[#SkyBlue] OneWireSensorInterface
+***[#SkyBlue] second sensor
+***[#SkyBlue]: identify sensor and
+their positions;
+**[#IndianRed] PowerControl
+***[#IndianRed] basic control structure
+****[#IndianRed] strategy patern???
+***[#IndianRed] Concept Verification
+****[#IndianRed]: constant duty cycle
+-> check meter reading;
+***[#SkyBlue] Basic Control Strategy
+****[#SkyBlue]: SumUpPowers to verify
+measurement integrity;
+****[#SkyBlue]: check temperature readings
+against min values to validate
+their integrity;
+****[#SkyBlue]: check temperature readings
+against max values;
+***[#SkyBlue] Extended Control Strategy
+***[#SkyBlue] Usage of Forecast
+**[#Green] SenecDataAcquisition
+**[#Green] SolarDataAcquisition
+***[#SkyBlue] SolarResultSubject
+***[#SkyBlue] SolarResultObserver
+
+@endwbs

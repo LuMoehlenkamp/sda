@@ -3,10 +3,13 @@
 #include <chrono>
 #include <iostream>
 
+#include "IControlStrategy.hh"
 #include "configManager.hh"
+#include "defaultControlStrategy.hh"
 #include "global.hh"
 #include "senecResultObserver.hh"
 #include "senecResultSubject.hh"
+#include "temperatureSensorsDto.hh"
 
 #include <boost/asio.hpp>
 #include <boost/bind/bind.hpp>
@@ -21,15 +24,19 @@ class PowerControl {
   static const unsigned DefaultTimerDuration;
 
 public:
-  PowerControl(boost::asio::io_context &ioContext,
-               SenecResultSubject &arResultSubject);
+  explicit PowerControl(boost::asio::io_context &ioContext,
+                        SenecResultSubject &arResultSubject,
+                        std::unique_ptr<IControlStrategy> &&arStrategy =
+                            std::make_unique<DefaultControlStrategy>());
 
   static void SignalHandler(int signal);
 
 private:
-  unsigned GetTimerDurationFromConfig();
+  bool InitGpio();
+  unsigned GetTimerDurationFromConfig() const;
   void Control();
   void SetTimer();
+  TemperatureSensorsDto GetTempeartures() const;
 
   int testval = 0;
   unsigned mTimerDuration;
@@ -40,5 +47,6 @@ private:
   my_logger::logger_type &mrLogger;
   bool mTestmode = true;
   bool mGpioInitialised = false;
+  std::unique_ptr<IControlStrategy> mpControlStrategy;
 };
 } // namespace SDA

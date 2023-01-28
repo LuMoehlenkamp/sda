@@ -26,9 +26,10 @@ public:
         << " - duty cycle: " << mDutyCycle / 10;
 
     if (!rTestMode && aGpioInitialized) {
-      BOOST_LOG_SEV(mrLogger, normal) << "DefaultControlStrategy: "
-                                      << "writing duty cycle 0 to gpio";
-      pwmWrite(18, 0);
+      BOOST_LOG_SEV(mrLogger, normal)
+          << "DefaultControlStrategy: "
+          << "writing duty cycle: " << mDutyCycle / 10 << "\% to gpio";
+      pwmWrite(18, mDutyCycle);
     }
   }
 };

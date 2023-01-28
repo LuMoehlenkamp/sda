@@ -155,10 +155,10 @@ void SenecDataAcquisition::ProcessResponse() {
   mTree.clear();
   std::istream response_stream(&mResponse);
   boost::property_tree::read_json(response_stream, mTree);
-  std::string filename = "test.json";
-  std::fstream f_stream(filename, f_stream.binary | f_stream.trunc |
-                                      f_stream.in | f_stream.out);
-  boost::property_tree::write_json(f_stream, mTree);
+  // std::string filename = "test.json";
+  // std::fstream f_stream(filename, f_stream.binary | f_stream.trunc |
+  //                                     f_stream.in | f_stream.out);
+  // boost::property_tree::write_json(f_stream, mTree);
   SenecResultDto resultDto;
 
   auto time_of_measurement = std::chrono::system_clock::now();

@@ -12,6 +12,7 @@ namespace SDA {
 class DefaultControlStrategy : public IControlStrategy {
 private:
   my_logger::logger_type &mrLogger;
+  int mDutyCycle = 500;
 
 public:
   DefaultControlStrategy() : mrLogger(my_logger::get()) {}
@@ -22,7 +23,8 @@ public:
     BOOST_LOG_SEV(mrLogger, normal)
         << "DefaultControlStrategy: "
         << "control cycle - charging level: " << rSenecResultDto.mChargeLevel
-        << " - duty cycle: " << 0;
+        << " - duty cycle: " << mDutyCycle / 10;
+
     if (!rTestMode && aGpioInitialized) {
       BOOST_LOG_SEV(mrLogger, normal) << "DefaultControlStrategy: "
                                       << "writing duty cycle 0 to gpio";

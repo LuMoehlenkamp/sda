@@ -35,7 +35,7 @@ bool GpioManager::InitOutput() {
 
     pinMode(18, PWM_OUTPUT);
     pwmSetMode(PWM_MODE_MS);
-    pwmSetClock(3840);
+    pwmSetClock(1920);
     pwmSetRange(1000);
     pwmWrite(18, 1000);
     BOOST_LOG_SEV(my_logger::get(), normal) << "wiringpi init successful";

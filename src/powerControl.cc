@@ -10,7 +10,7 @@ const unsigned PowerControl::DefaultTimerDuration = 10;
 // clang-format off
 PowerControl::PowerControl(boost::asio::io_context &ioContext,
                            SenecResultSubject &arResultSubject,
-                           std::unique_ptr<IControlStrategy> && arStrategy)
+                           std::unique_ptr<IPowerControlStrategy> && arStrategy)
     : mTimer(ioContext, boost::asio::chrono::seconds(1))
     , mpConfigManager( SDA::ConfigManager::GetInstance(SDA::ConfigManager::CONFIG_PATH))
     , mSenecResultObserver(arResultSubject)

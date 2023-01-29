@@ -12,9 +12,6 @@ BOOST_AUTO_TEST_CASE(first_and_only_test_case) {
   SDA::SenecDataAcquisition sda(ioContext, 1U);
   boost::timer::cpu_timer timer;
 
-  // ioContext.run();
-  // sleep(2);
-  // ioContext.stop();
   sda.Aquire();
 
   std::cout << timer.format() << '\n';

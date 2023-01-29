@@ -3,10 +3,11 @@
 #include <chrono>
 #include <iostream>
 
-#include "IControlStrategy.hh"
+#include "IPowerControlStrategy.hh"
 #include "configManager.hh"
-#include "defaultControlStrategy.hh"
 #include "global.hh"
+#include "powerControlStrategyDefault.hh"
+#include "powerControlStrategyExcess.hh"
 #include "senecResultObserver.hh"
 #include "senecResultSubject.hh"
 #include "temperatureSensorsDto.hh"
@@ -26,8 +27,8 @@ class PowerControl {
 public:
   explicit PowerControl(boost::asio::io_context &ioContext,
                         SenecResultSubject &arResultSubject,
-                        std::unique_ptr<IControlStrategy> &&arStrategy =
-                            std::make_unique<DefaultControlStrategy>());
+                        std::unique_ptr<IPowerControlStrategy> &&arStrategy =
+                            std::make_unique<PowerControlStrategyDefault>());
 
   static void SignalHandler(int signal);
 
@@ -47,6 +48,6 @@ private:
   my_logger::logger_type &mrLogger;
   bool mTestmode = true;
   bool mGpioInitialised = false;
-  std::unique_ptr<IControlStrategy> mpControlStrategy;
+  std::unique_ptr<IPowerControlStrategy> mpControlStrategy;
 };
 } // namespace SDA

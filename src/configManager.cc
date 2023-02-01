@@ -10,7 +10,8 @@ ConfigManager::ConfigManager(const std::string &arFilePathAndName)
     : mConfigLoaded(false), mFilePathAndName(arFilePathAndName),
       mTestMode(DEFAULT_TESTMODE), mSenecUpdateTime(DEFAULT_SENEC_UPDATE_TIME),
       mSolarUpdateTime(DEFAULT_SOLAR_UPDATE_TIME),
-      mPowerControlCycleTime(DEFAULT_POWER_CONTROL_CYCLE_TIME) {}
+      mPowerControlCycleTime(DEFAULT_POWER_CONTROL_CYCLE_TIME),
+      mExcessPowerThreshold(DEFAULT_EXCESS_POWER_THRESHHOLD) {}
 
 ConfigManager *ConfigManager::GetInstance(const std::string arFilePathAndName) {
   if (mpConfigManager == nullptr)
@@ -46,6 +47,20 @@ boost::optional<unsigned> ConfigManager::GetPowerControlCycleTime() {
   return boost::none;
 }
 
+boost::optional<unsigned> ConfigManager::GetExcessPowerThreshold() {
+  EnsureConfigLoaded();
+  if (mConfigLoaded)
+    return mExcessPowerThreshold;
+  return boost::none;
+}
+
+boost::optional<unsigned> ConfigManager::GetLoadPower() {
+  EnsureConfigLoaded();
+  if (mConfigLoaded)
+    return mLoadPower;
+  return boost::none;
+}
+
 bool ConfigManager::LoadConfig() {
   try {
     boost::property_tree::ptree tree;
@@ -57,6 +72,9 @@ bool ConfigManager::LoadConfig() {
         tree.get(SOLAR_UPDATE_TIME_NAME, DEFAULT_SOLAR_UPDATE_TIME);
     mPowerControlCycleTime =
         tree.get(POWER_CONTROL_CYCLE_NAME, DEFAULT_POWER_CONTROL_CYCLE_TIME);
+    mExcessPowerThreshold =
+        tree.get(EXCESS_POWER_THRESHOLD_NAME, DEFAULT_EXCESS_POWER_THRESHHOLD);
+    mLoadPower = tree.get(LOAD_POWER_NAME, DEFAULT_LOAD_POWER);
   } catch (const boost::property_tree::json_parser_error &pt_e) {
     std::cerr << pt_e.what() << '\n';
     return false;

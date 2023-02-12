@@ -42,8 +42,8 @@ private:
   int testval = 0;
   unsigned mTimerDuration;
   boost::asio::steady_timer mTimer;
-  SDA::GpioManager *mpGpioManager = nullptr;
-  SDA::ConfigManager *mpConfigManager = nullptr;
+  GpioManager *mpGpioManager = nullptr;
+  ConfigManager *mpConfigManager = nullptr;
   SenecResultObserver mSenecResultObserver;
   my_logger::logger_type &mrLogger;
   bool mTestmode = true;

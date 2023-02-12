@@ -31,6 +31,12 @@ add_definitions(-DBOOST_TEST_DYN_LINK)
 add_definitions(-DBOOST_BIND_GLOBAL_PLACEHOLDERS)
 add_executable(${PROJECT_UNIT_TESTS_NAME} ${UNIT_TESTS_SRC_FILES} ../src/configManager.cc ../src/senecDataAcquisition.cc ../src/solarDataAcquisition.cc ../src/oneWireSensorInterface.cc)
 # add_executable(${PROJECT_UNIT_TESTS_NAME} mainTest.cc oneWireSensorInterfaceTest.cc ../src/oneWireSensorInterface.cc)
-target_link_libraries(${PROJECT_UNIT_TESTS_NAME} ${Boost_LIBRARIES})
+# set_target_properties(${PROJECT_UNIT_TESTS_NAME} PROPERTIES log_level message)
+find_library(WIRINGPI_LIBRARIES NAMES wiringPi PATHS /usr/local/include/wiringPi.h)
+
+target_link_libraries(${PROJECT_UNIT_TESTS_NAME}
+                      ${Boost_LIBRARIES}
+                      ${WIRINGPI_LIBRARIES}
+                      )
 enable_testing()
 add_test(MainTest ${PROJECT_UNIT_TESTS_NAME})

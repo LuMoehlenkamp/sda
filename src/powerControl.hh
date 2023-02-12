@@ -28,7 +28,7 @@ public:
   explicit PowerControl(boost::asio::io_context &ioContext,
                         SenecResultSubject &arResultSubject,
                         std::unique_ptr<IPowerControlStrategy> &&arStrategy =
-                            std::make_unique<PowerControlStrategyDefault>());
+                            std::make_unique<PowerControlStrategyExcess>());
 
   static void SignalHandler(int signal);
 

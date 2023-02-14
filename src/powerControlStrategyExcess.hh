@@ -29,27 +29,37 @@ public:
     ConfigManager *pConfigManager(
         SDA::ConfigManager::GetInstance(SDA::ConfigManager::CONFIG_PATH));
     if (pConfigManager == nullptr) {
-      return; // ToDo: add log
+      BOOST_LOG_SEV(mrLogger, normal)
+          << "PowerControlStrategyExcess: "
+          << "config manager not initialized correctly";
+      return;
     }
     auto testmode_opt = pConfigManager->GetTestMode();
     auto threshold_power_opt = pConfigManager->GetExcessPowerThreshold();
     auto load_power_opt = pConfigManager->GetLoadPower();
     if (!testmode_opt.is_initialized() ||
         !threshold_power_opt.is_initialized() ||
-        !load_power_opt.is_initialized())
+        !load_power_opt.is_initialized()) {
+      BOOST_LOG_SEV(mrLogger, normal) << "PowerControlStrategyExcess: "
+                                      << "params not initialized correctly";
       return;
+    }
 
     auto time_now = std::chrono::system_clock::now();
     auto age_ns = time_now - rSenecResultDto.mTimeOfMeasurement;
     auto age_ms = std::chrono::duration_cast<std::chrono::milliseconds>(age_ns);
     std::chrono::milliseconds max_age_ms(10000); // ToDo: make this a parameter;
     if (age_ms > max_age_ms) {
-      // ToDo: add logging
+      BOOST_LOG_SEV(mrLogger, normal) << "PowerControlStrategyExcess: "
+                                      << "measurements too old";
       return;
     }
 
-    if (rTestMode || !aGpioInitialized)
+    if (rTestMode || !aGpioInitialized) {
+      BOOST_LOG_SEV(mrLogger, normal) << "PowerControlStrategyExcess: "
+                                      << "preconditions not fullfilled";
       return;
+    }
 
     auto export_power(-1.0f * rSenecResultDto.mPowerGrid);
     export_power -= static_cast<float>(threshold_power_opt.get());

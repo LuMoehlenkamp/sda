@@ -8,6 +8,9 @@
     - power grid's sign has to be inverted
     - build binary from dir ../build using: 'cmake --build . --config Release --target sda -- -j 1'
     - calc clock setting: 19.200.000MHz / pwmClock / pwmRange =>  19.200.000MHz / 1920 / 1000
+    - autostart using sudo update-rc.d NameDesSkripts defaults
+    - remove autostart using sudo update-rc.d -f NameDesSkripts remove
+    - show cron logs using sudo nano /var/log/syslog
 
 ## make temperature sensor data available
   - get more info regarding 1-wire interface

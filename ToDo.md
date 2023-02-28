@@ -11,6 +11,8 @@
     - autostart using sudo update-rc.d NameDesSkripts defaults
     - remove autostart using sudo update-rc.d -f NameDesSkripts remove
     - show cron logs using sudo nano /var/log/syslog
+    - local starten (test): sudo /usr/sbin/mosquitto -c /etc/mosquitto/mosquitto.conf -v
+    - mosquitto_sub -t 'openWB/#' -v -p 1883
 
 ## make temperature sensor data available
   - get more info regarding 1-wire interface

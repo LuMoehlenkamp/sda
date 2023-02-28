@@ -11,8 +11,8 @@
 ***[#SkyBlue]: identify sensor and
 their positions;
 **[#IndianRed] PowerControl
-***[#IndianRed] basic control structure
-****[#IndianRed] strategy patern???
+***[#Green] basic control structure
+****[#Green] strategy patern
 ***[#IndianRed] Concept Verification
 ****[#IndianRed]: constant duty cycle
 -> check meter reading;

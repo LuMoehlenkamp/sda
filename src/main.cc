@@ -1,11 +1,13 @@
 #include "configManager.hh"
 #include "global.hh"
+#include "mqttWrapper.hh"
 #include "powerControl.hh"
 #include "senecDataAcquisition.hh"
 #include "senecResultObserver.hh"
 #include "solarDataAcquisition.hh"
 
 #include <iostream>
+#include <mosquitto.h>
 #include <wiringPi.h>
 
 int main(int argc, char *argv[]) {
@@ -19,6 +21,15 @@ int main(int argc, char *argv[]) {
       SDA::ConfigManager::GetInstance(SDA::ConfigManager::CONFIG_PATH));
   auto senec_update_time_opt = p_config_manager->GetSenecUpdateTime();
   auto solar_update_time_opt = p_config_manager->GetSolarUpdateTime();
+
+  // mqttWrapper my_wrapper("openWb", "openWB", "localhost", 1883);
+  // while (1) {
+  //   int rc = my_wrapper.loop();
+  //   if (rc) {
+  //     std::cout << "rc: " << rc << '\n';
+  //     my_wrapper.reconnect();
+  //   }
+  // }
 
   boost::asio::io_context ioContext;
   boost::asio::executor_work_guard<boost::asio::io_context::executor_type>

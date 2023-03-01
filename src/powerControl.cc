@@ -55,7 +55,8 @@ void PowerControl::Control() {
   auto &dto = mSenecResultObserver.GetLatestMeasurement();
 
   // ToDo: Select control strategy
-  mpControlStrategy->doControl(dto, mTestmode, mGpioInitialised);
+  mpControlStrategy->doControl(ConfigManager::CONFIG_PATH, dto, mTestmode,
+                               mGpioInitialised);
 }
 
 void PowerControl::SetTimer() {

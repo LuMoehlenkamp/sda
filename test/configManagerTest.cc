@@ -1,13 +1,12 @@
 #include "../src/configManager.hh"
+#include "testDefines.hh"
+
 #include <boost/property_tree/exceptions.hpp>
 #include <boost/test/unit_test.hpp>
 #include <iostream>
 
 namespace SDA {
 namespace TEST {
-
-const char *VALID_CONFIG_PATH = "../../src/params.json";
-const char *INVALID_CONFIG_PATH = "../../src/param.json";
 
 struct ConfigManagerTestValidFixture {
   ConfigManagerTestValidFixture() {
@@ -41,7 +40,7 @@ BOOST_AUTO_TEST_CASE(
   unsigned expected_excess_power_threshold = 500;
   unsigned expected_load_power = 2500;
 
-  auto testmode = mpConfigManager->GetTestMode();
+  boost::optional<bool> testmode = mpConfigManager->GetTestMode();
   auto senec_update_time = mpConfigManager->GetSenecUpdateTime();
   auto solar_update_time = mpConfigManager->GetSolarUpdateTime();
   auto control_cycle_time = mpConfigManager->GetPowerControlCycleTime();
@@ -49,6 +48,7 @@ BOOST_AUTO_TEST_CASE(
   auto load_power = mpConfigManager->GetLoadPower();
 
   BOOST_REQUIRE(mpConfigManager != nullptr);
+  BOOST_REQUIRE(testmode.is_initialized());
   BOOST_CHECK_EQUAL(expected_testmode, testmode.get());
   BOOST_CHECK_EQUAL(expected_senec_update_time, senec_update_time.get());
   BOOST_CHECK_EQUAL(expected_solar_update_time, solar_update_time.get());

@@ -5,45 +5,46 @@ using namespace SDA;
 PowerControlStrategyExcess::PowerControlStrategyExcess()
     : mrLogger(my_logger::get()) {}
 
-void PowerControlStrategyExcess::doControl(
-    const SenecResultDto &rSenecResultDto, const bool rTestMode,
-    const bool aGpioInitialized) {
+unsigned PowerControlStrategyExcess::doControl(
+    const std::string &arConfigPath, const SenecResultDto &arSenecResultDto,
+    const bool aTestMode, const bool aGpioInitialized) {
   BOOST_LOG_SEV(mrLogger, normal)
       << "PowerControlStrategyExcess: "
-      << "control cycle - charging level: " << rSenecResultDto.mChargeLevel
+      << "control cycle - charging level: " << arSenecResultDto.mChargeLevel
       << " - duty cycle: " << mDutyCycle / 10; // ToDo: refactor
 
   boost::optional<bool> testmode_opt;
   boost::optional<unsigned int> threshold_power_opt, load_power_opt;
 
-  if (!getParams(testmode_opt, threshold_power_opt, load_power_opt) ||
-      !checkMeasurementAge(rSenecResultDto.mTimeOfMeasurement) ||
-      !checkPreconditions(testmode_opt.get(), aGpioInitialized))
+  if (!getParams(arConfigPath, testmode_opt, threshold_power_opt,
+                 load_power_opt) ||
+      !checkMeasurementAge(arSenecResultDto.mTimeOfMeasurement))
     mDutyCycle = 0;
 
   else {
     auto export_power =
-        calcExportPower(rSenecResultDto.mPowerGrid, threshold_power_opt);
+        calcExportPower(arSenecResultDto.mPowerGrid, threshold_power_opt);
 
     auto norm_exp_power_limited =
         normAndLimit(export_power, load_power_opt.get());
 
-    mDutyCycle = static_cast<int>(norm_exp_power_limited);
+    mDutyCycle = static_cast<unsigned>(norm_exp_power_limited);
   }
 
   BOOST_LOG_SEV(mrLogger, normal)
       << "PowerControlStrategyExcess: "
       << "writing duty cycle: " << mDutyCycle << "\% to gpio";
 
-  pwmWrite(18, mDutyCycle);
+  if (checkPreconditions(aTestMode, aGpioInitialized))
+    pwmWrite(18, mDutyCycle);
+  return mDutyCycle;
 }
 
 bool PowerControlStrategyExcess::getParams(
-    boost::optional<bool> &rTestModeOpt,
+    const std::string &arConfigPath, boost::optional<bool> &rTestModeOpt,
     boost::optional<unsigned int> &rExcessPowerThreshholdOpt,
     boost::optional<unsigned int> &rLoadPowerOpt) const {
-  ConfigManager *pConfigManager(
-      SDA::ConfigManager::GetInstance(SDA::ConfigManager::CONFIG_PATH));
+  ConfigManager *pConfigManager(SDA::ConfigManager::GetInstance(arConfigPath));
   if (pConfigManager == nullptr) {
     BOOST_LOG_SEV(mrLogger, normal)
         << "PowerControlStrategyExcess: "
@@ -69,7 +70,8 @@ bool PowerControlStrategyExcess::checkMeasurementAge(
     const std::chrono::_V2::system_clock::time_point &rTimeOfMeasurement)
     const {
   auto time_now = std::chrono::system_clock::now();
-  auto age_ns = time_now - rTimeOfMeasurement;
+  auto age_ns = std::chrono::duration_cast<std::chrono::nanoseconds>(
+      time_now - rTimeOfMeasurement);
   auto age_ms = std::chrono::duration_cast<std::chrono::milliseconds>(age_ns);
   std::chrono::milliseconds max_age_ms(10000); // ToDo: make this a parameter;
   if (age_ms > max_age_ms) {
@@ -101,7 +103,7 @@ float PowerControlStrategyExcess::calcExportPower(
 float PowerControlStrategyExcess::normAndLimit(float aInputValue,
                                                float aBaseValue) const {
   auto normalized_export_power(1000.0f * aInputValue /
-                               static_cast<float>(aInputValue));
+                               static_cast<float>(aBaseValue));
   auto norm_exp_power_limited(
       std::max(0.0f, std::min(normalized_export_power, 1000.0f)));
   return norm_exp_power_limited;

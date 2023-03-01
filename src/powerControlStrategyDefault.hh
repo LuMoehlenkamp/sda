@@ -17,8 +17,10 @@ private:
 public:
   PowerControlStrategyDefault() : mrLogger(my_logger::get()) {}
 
-  void doControl(const SenecResultDto &rSenecResultDto, const bool rTestMode,
-                 const bool aGpioInitialized) override {
+  unsigned doControl(const std::string &arConfigPath,
+                     const SenecResultDto &rSenecResultDto,
+                     const bool rTestMode,
+                     const bool aGpioInitialized) override {
     BOOST_LOG_SEV(mrLogger, normal)
         << "PowerControlStrategyDefault: "
         << "control cycle - charging level: " << rSenecResultDto.mChargeLevel
@@ -30,6 +32,7 @@ public:
           << "writing duty cycle: " << mDutyCycle / 10 << "\% to gpio";
       pwmWrite(18, mDutyCycle);
     }
+    return 0;
   }
 };
 } // namespace SDA

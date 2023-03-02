@@ -22,12 +22,11 @@ unsigned PowerControlStrategyExcess::doControl(
     mDutyCycle = 0;
 
   else {
-    auto export_power =
-        calcExportPower(arSenecResultDto.mPowerGrid, threshold_power_opt);
-
+    auto act_load_power = calcActLoadPower(load_power_opt);
+    auto export_power = calcExportPower(arSenecResultDto.mPowerGrid,
+                                        threshold_power_opt, act_load_power);
     auto norm_exp_power_limited =
         normAndLimit(export_power, load_power_opt.get());
-
     mDutyCycle = static_cast<unsigned>(norm_exp_power_limited);
   }
 
@@ -93,11 +92,20 @@ bool PowerControlStrategyExcess::checkPreconditions(
 }
 
 float PowerControlStrategyExcess::calcExportPower(
-    float aPowerGrid,
-    const boost::optional<unsigned int> &arThresholdPowerOpt) const {
+    float aPowerGrid, const boost::optional<unsigned int> &arThresholdPowerOpt,
+    float aActPowerLoad) const {
   auto export_power(-1.0f * aPowerGrid);
   export_power -= static_cast<float>(arThresholdPowerOpt.get());
+  export_power += aActPowerLoad;
   return export_power;
+}
+
+float PowerControlStrategyExcess::calcActLoadPower(
+    const boost::optional<unsigned> &arLoadPowerOpt) const {
+  float load_power(static_cast<float>(arLoadPowerOpt.get_value_or(0u)));
+  float load_factor(static_cast<float>(mDutyCycle) / 1000.0f);
+  float act_load_power(load_power * load_factor);
+  return act_load_power;
 }
 
 float PowerControlStrategyExcess::normAndLimit(float aInputValue,

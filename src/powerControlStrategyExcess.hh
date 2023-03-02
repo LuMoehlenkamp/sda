@@ -25,14 +25,16 @@ private:
   bool getParams(const std::string &arConfigPath,
                  boost::optional<bool> &rTestModeOpt,
                  boost::optional<unsigned int> &rExcessPowerThreshholdOpt,
-                 boost::optional<unsigned int> &rLoadPowerOpt) const;
+                 boost::optional<unsigned> &rLoadPowerOpt) const;
   bool checkMeasurementAge(const std::chrono::_V2::system_clock::time_point
                                &rTimeOfMeasurement) const;
   bool checkPreconditions(const bool aTestMode,
                           const bool aGpioInitialized) const;
-  float calcExportPower(
-      float aPowerGrid,
-      const boost::optional<unsigned int> &arThresholdPowerOpt) const;
+  float calcActLoadPower(const boost::optional<unsigned> &arLoadPowerOpt) const;
+  float
+  calcExportPower(float aPowerGrid,
+                  const boost::optional<unsigned int> &arThresholdPowerOpt,
+                  float aActPowerLoad) const;
   float normAndLimit(float aInputValue, float aBaseValue) const;
 
   my_logger::logger_type &mrLogger;

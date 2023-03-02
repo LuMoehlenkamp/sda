@@ -44,7 +44,18 @@ BOOST_FIXTURE_TEST_SUITE(PowerControlStrategyExcessTest,
                          PowerControlStrategyExcessTestFixture)
 // ToDo make this an fixture test suite
 //  clang-format off
-BOOST_AUTO_TEST_CASE(ctor_ObjectCreatedSuccessfully) {
+BOOST_AUTO_TEST_CASE(doControl_BasicConsumptionScenario_returns_0) {
+  BOOST_TEST_MESSAGE("starting control strategy unit tests\n");
+  InitSenecResultDtoBasicConsumptionScenario();
+  unsigned expected_val = 0;
+
+  auto return_val = mUut.doControl(VALID_CONFIG_PATH, mSenecResultDto,
+                                   mTestMode, mGpioInitialized);
+
+  BOOST_CHECK_EQUAL(expected_val, return_val);
+}
+
+BOOST_AUTO_TEST_CASE(doControl_BasicExportScenario_returns_1000) {
   BOOST_TEST_MESSAGE("starting control strategy unit tests\n");
   InitSenecResultDtoBasicExportScenario();
   unsigned expected_val = 1000;

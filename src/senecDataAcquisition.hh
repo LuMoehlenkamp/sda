@@ -1,6 +1,8 @@
 #pragma once
 
 #include "dataAcquisitionDefines.hh"
+#include "global.hh"
+#include "senecResultSubject.hh"
 
 #include <array>
 #include <iostream>
@@ -12,10 +14,6 @@
 #include <boost/asio.hpp>
 #include <boost/optional.hpp>
 #include <boost/property_tree/ptree.hpp>
-
-#include "dataAcquisitionDefines.hh"
-#include "global.hh"
-#include "senecResultSubject.hh"
 
 namespace SDA {
 const std::string SENEC_PATH = "/lala.cgi";

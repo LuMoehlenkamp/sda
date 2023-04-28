@@ -1,5 +1,7 @@
 #include "powerControlStrategyExcess.hh"
 
+#include <algorithm>
+
 using namespace SDA;
 
 PowerControlStrategyExcess::PowerControlStrategyExcess()
@@ -113,6 +115,6 @@ float PowerControlStrategyExcess::normAndLimit(float aInputValue,
   auto normalized_export_power(1000.0f * aInputValue /
                                static_cast<float>(aBaseValue));
   auto norm_exp_power_limited(
-      std::max(0.0f, std::min(normalized_export_power, 1000.0f)));
+      std::clamp(normalized_export_power, 0.0f, 1000.0f));
   return norm_exp_power_limited;
 }

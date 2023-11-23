@@ -13,6 +13,7 @@ set(PROJECT_LIB ${PROJECT_LIB} ${Boost_LOG_LIBRARY} ${Boost_LOG_SETUP_LIBRARY})
 
 set(mqtt_cpp_iface_DIR /usr/local/lib/cmake/mqtt_cpp_iface)
 find_package(mqtt_cpp_iface REQUIRED)
+find_package(PahoMqttCpp REQUIRED)
 
 add_definitions(-DBOOST_BIND_GLOBAL_PLACEHOLDERS)
 # add_definitions(-DBOOST_LOG_DYN_LINK)
@@ -39,6 +40,9 @@ target_link_libraries(${PROJECT_NAME_STR}
                       ${WIRINGPI_LIBRARIES}
                       ${MOSQUITTO_LIBRARIES}
                       # ${Boost_LOG_LIBRARY}
+                      ${PAHO_CPP_LIB}
                       mqtt_cpp_iface::mqtt_cpp_iface
-                      stdc++fs)
+                      stdc++fs
+                      ssl
+                      crypto)
                       # )

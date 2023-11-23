@@ -13,6 +13,7 @@
     - show cron logs using sudo nano /var/log/syslog
     - local starten (test): sudo /usr/sbin/mosquitto -c /etc/mosquitto/mosquitto.conf -v
     - mosquitto_sub -t 'openWB/#' -v -p 1883
+    - curl -k https://192.168.178.40/lala.cgi -H 'Content-Type: application/json' -d '{"ENERGY":{"GUI_HOUSE_POW":"","GUI_GRID_POW":"","GUI_INVERTER_POWER":"","GUI_BAT_DATA_POWER":"","GUI_BAT_DATA_FUEL_CHARGE":"","STAT_STATE":""},"STATISTIC":{"LIVE_GRID_IMPORT":""},"PM1OBJ1":{"P_AC":""}}'
 
 ## make temperature sensor data available
   - get more info regarding 1-wire interface

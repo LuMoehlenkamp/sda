@@ -1,8 +1,7 @@
 [requires]
-wiringpi/cci.20210727
+redboltz-mqtt_cpp/13.0.0
 
 [generators]
-cmake
 CMakeDeps
 CMakeToolchain
 

@@ -36,12 +36,13 @@ int main(int argc, char *argv[]) {
   // }
 
   boost::asio::io_context ioContext;
+  boost::asio::ssl::context sslContext(boost::asio::ssl::context::sslv23);
   boost::asio::executor_work_guard<boost::asio::io_context::executor_type>
       work = boost::asio::make_work_guard(ioContext);
 
-  SDA::SenecDataAcquisition senec_da(ioContext, senec_update_time_opt.get());
+  SDA::SenecDataAcquisition senec_da(ioContext, sslContext,
+                                     senec_update_time_opt.get());
   SDA::SolarDataAcquisition solar_da(ioContext, solar_update_time_opt.get());
-
   SDA::OpenWbDataAcquisition openWb_da(ioContext, senec_update_time_opt.get());
 
   auto &senec_rs = senec_da.GetResultSubject();

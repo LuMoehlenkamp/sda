@@ -41,11 +41,11 @@ bool PowerControl::InitGpio() {
   mpGpioManager = GpioManager::GetInstance();
   if (mpGpioManager != nullptr) {
     mTestmode = mpGpioManager->GetTestmodeFromConfig();
-    BOOST_LOG_SEV(mrLogger, normal) << "TestMode is: " << mTestmode;
     mGpioInitialised = mpGpioManager->InitOutput();
-    BOOST_LOG_SEV(mrLogger, normal)
-        << "GPIO initialisation status is: " << mGpioInitialised;
   }
+  BOOST_LOG_SEV(mrLogger, normal) << "TestMode is: " << mTestmode;
+  BOOST_LOG_SEV(mrLogger, normal)
+      << "GPIO initialisation status is: " << mGpioInitialised;
   return mGpioInitialised;
 }
 

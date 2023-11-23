@@ -9,10 +9,10 @@ BOOST_AUTO_TEST_CASE(first_and_only_test_case) {
   boost::asio::io_context ioContext;
   boost::asio::executor_work_guard<boost::asio::io_context::executor_type>
       work = boost::asio::make_work_guard(ioContext);
-  SDA::SolarDataAcquisition sda(ioContext, 1U);
+  SDA::SolarDataAcquisition solar_da(ioContext, 1U);
   boost::timer::cpu_timer timer;
 
-  sda.Aquire();
+  solar_da.Aquire();
 
   std::cout << timer.format() << '\n';
   BOOST_REQUIRE(true);

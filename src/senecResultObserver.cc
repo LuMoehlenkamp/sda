@@ -14,7 +14,7 @@ SenecResultObserver::SenecResultObserver(SenecResultSubject &subject)
 }
 
 SenecResultObserver::~SenecResultObserver() {
-  BOOST_LOG_SEV(mrLogger, normal) << "SenecResultObserver::Ctor called";
+  BOOST_LOG_SEV(mrLogger, normal) << "SenecResultObserver::Dtor called";
 }
 
 void SenecResultObserver::Update(const SenecResultDto &arDataFromSubject) {

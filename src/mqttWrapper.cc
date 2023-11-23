@@ -15,17 +15,14 @@ mqttWrapper::mqttWrapper(const char *_id, const char *_topic, const char *_host,
   // connect_async(host, port, keepalive);    // non blocking connection to
   // broker request
   connect(host, port, keepalive);
-  /*
-  try
-  {
-    loop_start();            // Start thread managing connection / publish /
-  subscribe
-  }
-  catch (const std::exception&)
-  {
+  int mid = 0;
+  subscribe(&mid, "openWB/#");
+
+  try {
+    loop_start(); // Start thread managing connection / publish / subscribe
+  } catch (const std::exception &) {
     std::cout << "exception thrown";
   }
-  */
 }
 
 mqttWrapper::~mqttWrapper() {

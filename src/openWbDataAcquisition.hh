@@ -23,7 +23,7 @@ public:
         // mpClient(
         //     MQTT_NS::make_async_client(mrIoContext, "192.168.178.20", 1883)),
         mrLogger(my_logger::get()) {
-    mTimer.async_wait(boost::bind(&OpenWbDataAcquisition::Aquire, this));
+    mTimer.async_wait(boost::bind(&OpenWbDataAcquisition::Acquire, this));
     // auto c = MQTT_NS::make_async_client(mrIoContext, "localhost", 1883);
 
     // mpClient->set_client_id("cid1");
@@ -37,9 +37,9 @@ public:
 
   void Setup() {}
 
-  void Aquire() {
+  void Acquire() {
     mTimer.expires_after(std::chrono::seconds(mTimerDuration));
-    mTimer.async_wait(boost::bind(&OpenWbDataAcquisition::Aquire, this));
+    mTimer.async_wait(boost::bind(&OpenWbDataAcquisition::Acquire, this));
 
     // mpClient->set_close_handler(
     //     std::bind(&OpenWbDataAcquisition::CloseHandler, this));

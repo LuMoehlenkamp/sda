@@ -12,7 +12,7 @@ BOOST_AUTO_TEST_CASE(first_and_only_test_case) {
   SDA::SolarDataAcquisition solar_da(ioContext, 1U);
   boost::timer::cpu_timer timer;
 
-  solar_da.Aquire();
+  solar_da.Acquire();
 
   std::cout << timer.format() << '\n';
   BOOST_REQUIRE(true);

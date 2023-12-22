@@ -16,17 +16,17 @@ SolarDataAcquisition::SolarDataAcquisition(io_context &ioContext,
       mTimerDuration(TimerDuration),
       mTimer(ioContext, std::chrono::seconds(INITIAL_TIMER_DURATION)),
       mrLogger(my_logger::get()) {
-  mTimer.async_wait(bind(&SolarDataAcquisition::Aquire, this));
+  mTimer.async_wait(bind(&SolarDataAcquisition::Acquire, this));
 }
 
-void SolarDataAcquisition::Aquire() {
+void SolarDataAcquisition::Acquire() {
   try {
     ip::tcp::resolver::query Query(SOLAR_HOST, "80");
     mResolver.async_resolve(Query, bind(&SolarDataAcquisition::ResolveHandler,
                                         this, boost::asio::placeholders::error,
                                         boost::asio::placeholders::results));
     mTimer.expires_after(std::chrono::seconds(mTimerDuration));
-    mTimer.async_wait(boost::bind(&SolarDataAcquisition::Aquire, this));
+    mTimer.async_wait(boost::bind(&SolarDataAcquisition::Acquire, this));
   } catch (boost::system::system_error &e) {
     std::cerr << e.what() << '\n';
   }

@@ -46,7 +46,7 @@ const std::string POST_REQUEST =
     X_REQUEST_WITH + BLANK + X_REQUEST_WITH_VALUE + CRLF +
     CONTENT_LENGTH + BLANK + std::to_string(SENEC_REQUEST.length()) + CRLF +
     ORIGIN + BLANK + ORIGIN_VALUE + CRLF +
-    CONNECTION + BLANK + CONNECTION_CLOSE_VALUE + CRLF +
+    CONNECTION + BLANK + CONNECTION_KEEP_ALIVE_VALUE + CRLF +
     REFERER + BLANK + REFERER_VALUE + CRLF +
     SEC_FETCH_DEST + BLANK + SEC_FETCH_DEST_VALUE + CRLF +
     SEC_FETCH_MODE + BLANK + SEC_FETCH_MODE_VALUE + CRLF +
@@ -65,7 +65,7 @@ public:
   SenecDataAcquisition(SenecDataAcquisition &&) = delete;
   SenecDataAcquisition(const SenecDataAcquisition &) = delete;
 
-  void Aquire();
+  void Acquire();
   void
   ResolveHandler(const boost::system::error_code &ec,
                  const boost::asio::ip::tcp::resolver::results_type &endpoints);

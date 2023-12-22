@@ -28,7 +28,7 @@ class SolarDataAcquisition {
 public:
   SolarDataAcquisition(boost::asio::io_context &ioContext,
                        unsigned int TimerDuration);
-  void Aquire();
+  void Acquire();
   void
   ResolveHandler(const boost::system::error_code &ec,
                  const boost::asio::ip::tcp::resolver::results_type &endpoints);

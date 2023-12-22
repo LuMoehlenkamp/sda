@@ -25,18 +25,19 @@ SenecDataAcquisition::SenecDataAcquisition(io_context &ioContext,
       mTimer(ioContext, std::chrono::seconds(INITIAL_TIMER_DURATION)),
       mrLogger(my_logger::get()) {
   mSslSocket.set_verify_mode(boost::asio::ssl::verify_none);
-  mTimer.async_wait(bind(&SenecDataAcquisition::Aquire, this));
+  mTimer.async_wait(bind(&SenecDataAcquisition::Acquire, this));
 }
 
-void SenecDataAcquisition::Aquire() {
+void SenecDataAcquisition::Acquire() {
   try {
+    mSslSocket.set_verify_mode(boost::asio::ssl::verify_none);
     ip::tcp::resolver::query Query(SENEC_IP, "443");
     mResolver.async_resolve(SENEC_IP, "https",
                             bind(&SenecDataAcquisition::ResolveHandler, this,
                                  boost::asio::placeholders::error,
                                  boost::asio::placeholders::results));
     mTimer.expires_after(std::chrono::seconds(mTimerDuration));
-    mTimer.async_wait(boost::bind(&SenecDataAcquisition::Aquire, this));
+    mTimer.async_wait(boost::bind(&SenecDataAcquisition::Acquire, this));
   } catch (boost::system::system_error &e) {
     std::cerr << e.what() << '\n';
   }
@@ -54,7 +55,7 @@ void SenecDataAcquisition::ResolveHandler(
     BOOST_LOG_SEV(mrLogger, severity_level::normal)
         << "SenecDataAcquisition::ResolveHandler: Resolved address: "
         << endpoint.address() << ':' << endpoint.port();
-    async_connect(mSslSocket.lowest_layer(), endpoints,
+    async_connect(mSslSocket.next_layer(), endpoints,
                   bind(&SenecDataAcquisition::ConnectHandler, this,
                        boost::asio::placeholders::error));
   }
@@ -116,7 +117,6 @@ void SenecDataAcquisition::WriteRequestHandler(
   }
 }
 
-// read only the first line from the response
 void SenecDataAcquisition::ReadStatusHandler(
     const boost::system::error_code &ec) {
   if (!ec) {
@@ -198,29 +198,6 @@ void SenecDataAcquisition::ReadHeaderHandler(
                                    boost::asio::placeholders::error));
   }
 }
-
-// void SenecDataAcquisition::ReadContentHandler(
-//     const boost::system::error_code &ec) {
-//   if (!ec) {
-//     BOOST_LOG_SEV(mrLogger, severity_level::normal)
-//         << "SenecDataAcquisition::ReadContentHandler: Response content "
-//            "successful read";
-//     async_read_until(mSslSocket, mResponse, "}}",
-//                      bind(&SenecDataAcquisition::ProcessResponse, this,
-//                           boost::asio::placeholders::error));
-
-//   } else if (ec.message() != EOF_MESSAGE) {
-//     BOOST_LOG_SEV(mrLogger, severity_level::error)
-//         << "SenecDataAcquisition::ReadContentHandler: Error: " <<
-//         ec.message()
-//         << ec.operator std::error_code();
-//   } else {
-//     BOOST_LOG_SEV(mrLogger, severity_level::normal)
-//         << "SenecDataAcquisition::ReadContentHandler: finished reading "
-//            "response";
-//     // ProcessResponse();
-//   }
-// }
 
 void SenecDataAcquisition::ReadContentHandler(
     const boost::system::error_code &ec) {

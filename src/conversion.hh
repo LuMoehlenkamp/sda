@@ -43,7 +43,7 @@ public:
       return_val = reinterpret_cast<float &>(x);
       return return_val;
     }
-    if (SplitVec[0] == "u8") {
+    if (SplitVec[0] == "u8" || SplitVec[0] == "u3") {
       return_val = x;
       return return_val;
     }

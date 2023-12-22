@@ -6,6 +6,7 @@
 #include "openWbDataAcquisition.hh"
 #include "powerControl.hh"
 #include "senecDataAcquisition.hh"
+#include "senecDataAcquisitionCurl.hh"
 #include "senecResultObserver.hh"
 #include "solarDataAcquisition.hh"
 
@@ -35,23 +36,30 @@ int main(int argc, char *argv[]) {
   //   }
   // }
 
-  boost::asio::io_context ioContext;
-  boost::asio::ssl::context sslContext(boost::asio::ssl::context::sslv23);
-  boost::asio::executor_work_guard<boost::asio::io_context::executor_type>
-      work = boost::asio::make_work_guard(ioContext);
+  try {
+    boost::asio::io_context ioContext;
+    boost::asio::ssl::context sslContext(boost::asio::ssl::context::sslv23);
+    boost::asio::executor_work_guard<boost::asio::io_context::executor_type>
+        work = boost::asio::make_work_guard(ioContext);
 
-  SDA::SenecDataAcquisition senec_da(ioContext, sslContext,
-                                     senec_update_time_opt.get());
-  SDA::SolarDataAcquisition solar_da(ioContext, solar_update_time_opt.get());
-  SDA::OpenWbDataAcquisition openWb_da(ioContext, senec_update_time_opt.get());
+    // SDA::SenecDataAcquisition senec_da(ioContext, sslContext,
+    //                                    senec_update_time_opt.get());
+    SDA::SolarDataAcquisition solar_da(ioContext, solar_update_time_opt.get());
+    SDA::OpenWbDataAcquisition openWb_da(ioContext,
+                                         senec_update_time_opt.get());
+    SDA::SenecDataAcquisitionCurl senec_cda(ioContext,
+                                            senec_update_time_opt.get());
 
-  auto &senec_rs = senec_da.GetResultSubject();
-  SDA::PowerControl power_control(ioContext, senec_rs);
+    // auto &senec_rs = senec_da.GetResultSubject();
+    // SDA::PowerControl power_control(ioContext, senec_rs);
 
-  std::signal(SIGINT, SDA::PowerControl::SignalHandler);
-  std::signal(SIGTERM, SDA::PowerControl::SignalHandler);
+    std::signal(SIGINT, SDA::PowerControl::SignalHandler);
+    std::signal(SIGTERM, SDA::PowerControl::SignalHandler);
 
-  ioContext.run();
+    ioContext.run();
+  } catch (std::exception &e) {
+    std::cerr << "Exception: " << e.what() << "\n";
+  }
 
   return 0;
 }
